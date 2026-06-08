@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hiring Tracker — Square Yards KAM Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;
+  --surface:#ffffff;
+  --surface2:#f0ede8;
+  --border:#e2ddd8;
+  --border2:#ccc8c2;
+  --text:#1a1816;
+  --text2:#6b6760;
+  --text3:#9e9a94;
+  --green-bg:#e8f5e0;--green:#2d6a1f;
+  --red-bg:#fceaea;--red:#992222;
+  --amber-bg:#fef3db;--amber:#7a4d10;
+  --blue-bg:#e6f0fb;--blue:#1a4f8a;
+  --purple-bg:#eeedfd;--purple:#4a3db0;
+  --teal-bg:#e0f5ee;--teal:#0e6b50;
+  --gray-bg:#eeece8;--gray:#555350;
+  --radius:10px;--radius-lg:14px;
+  --font:'DM Sans',sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,.08);
+}
+[data-theme=dark]{
+  --bg:#111110;--surface:#1c1b19;--surface2:#252421;
+  --border:#2e2c29;--border2:#3d3b37;
+  --text:#f0ede8;--text2:#9e9a94;--text3:#6b6760;
+  --green-bg:#1a2e15;--green:#7ecb6a;
+  --red-bg:#2e1515;--red:#f08080;
+  --amber-bg:#2a1e09;--amber:#f0b860;
+  --blue-bg:#0e1e30;--blue:#7ab4f0;
+  --purple-bg:#1a1640;--purple:#a89ef5;
+  --teal-bg:#0a2119;--teal:#5fd4a8;
+  --gray-bg:#1e1d1b;--gray:#b0aba4;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;transition:background .2s,color .2s}
+.app{max-width:1100px;margin:0 auto;padding:1.5rem 1rem}
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;gap:12px;flex-wrap:wrap}
+.header-left h1{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-.02em}
+.header-left p{font-size:12px;color:var(--text2);margin-top:2px}
+.header-right{display:flex;gap:8px;align-items:center}
+/* BUTTONS */
+.btn{padding:8px 16px;font-size:13px;font-weight:500;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:var(--font)}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.primary:hover{opacity:.85}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn.danger{color:var(--red);border-color:var(--red)}
+.btn.danger:hover{background:var(--red-bg)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.1rem}
+.metric-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.metric-value{font-size:24px;font-weight:600;color:var(--text);line-height:1}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:4px}
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius);padding:3px;margin-bottom:1.25rem;width:fit-content}
+.tab{padding:6px 14px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--text2);transition:all .15s;border:none;background:none;font-family:var(--font)}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filter-select{padding:6px 10px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer;font-family:var(--font)}
+.filter-label{font-size:12px;color:var(--text2);margin-left:2px}
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2);cursor:pointer}
+.name-cell{font-weight:500;font-size:13px}
+.sub-text{font-size:11px;color:var(--text2);margin-top:2px}
+/* BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-selected{background:var(--green-bg);color:var(--green)}
+.badge-joined{background:var(--teal-bg);color:var(--teal)}
+.badge-offered{background:var(--amber-bg);color:var(--amber)}
+.badge-pending{background:var(--gray-bg);color:var(--gray)}
+.badge-dropped{background:var(--red-bg);color:var(--red)}
+.badge-pipeline{background:var(--purple-bg);color:var(--purple)}
+/* RATING STARS */
+.stars{display:inline-flex;gap:3px;align-items:center}
+.star{width:9px;height:9px;border-radius:2px}
+/* LEADER CARDS */
+.leader-grid{display:flex;flex-direction:column;gap:10px}
+.leader-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem}
+.leader-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;flex-wrap:wrap}
+.leader-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
+.leader-cities{font-size:11px;color:var(--text2)}
+.leader-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.lstat{text-align:center}
+.lstat-num{font-size:18px;font-weight:600}
+.lstat-lbl{font-size:10px;color:var(--text2);margin-top:2px}
+.lstat-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.lstat-fill{height:100%;border-radius:2px}
+/* TARGET CARDS */
+.target-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;margin-bottom:10px}
+.target-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.target-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.mini-metric{background:var(--surface2);border-radius:var(--radius);padding:.7rem .85rem}
+.mini-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.mini-val{font-size:17px;font-weight:600}
+.progress-wrap{display:flex;align-items:center;gap:10px}
+.progress-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s}
+.progress-text{font-size:11px;color:var(--text2);white-space:nowrap}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;max-width:520px;width:100%;margin:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+.modal-title{font-size:15px;font-weight:600}
+.detail-row{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.detail-row:last-of-type{border-bottom:none}
+.detail-label{color:var(--text2);min-width:110px;flex-shrink:0;font-size:12px;padding-top:1px}
+.detail-val{color:var(--text);flex:1}
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;background:var(--surface2);color:var(--text2);margin:2px 2px 0 0;border:1px solid var(--border)}
+.status-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+/* TEXTAREA */
+textarea{width:100%;min-height:110px;padding:12px;font-size:13px;font-family:var(--font);border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);resize:vertical;line-height:1.6}
+textarea:focus{outline:none;border-color:var(--text)}
+/* FEEDBACK */
+.feedback{padding:10px 12px;border-radius:var(--radius);font-size:12px;margin-top:10px;display:none}
+.fb-success{background:var(--green-bg);color:var(--green)}
+.fb-error{background:var(--red-bg);color:var(--red)}
+.fb-loading{background:var(--purple-bg);color:var(--purple)}
+/* EMPTY */
+.empty{text-align:center;padding:3rem 1rem;color:var(--text2)}
+.empty i{font-size:36px;opacity:.3;display:block;margin-bottom:10px}
+/* MOBILE */
+@media(max-width:600px){
+  .metrics{grid-template-columns:repeat(3,1fr)}
+  .leader-stats{grid-template-columns:repeat(3,1fr)}
+  .target-mini-grid{grid-template-columns:repeat(2,1fr)}
+  th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:none}
+}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Hiring Tracker</h1>
+      <p>KAM Pipeline · Square Yards · FY 2025–26</p>
+    </div>
+    <div class="header-right">
+      <button class="btn" onclick="toggleTheme()" title="Toggle dark mode"><i class="ti ti-moon-stars"></i></button>
+      <button class="btn primary" onclick="openAddModal()"><i class="ti ti-clipboard-text"></i> Paste WA Feedback</button>
+    </div>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('pipeline',this)">All Candidates</button>
+      <button class="tab" onclick="switchTab('leaders',this)">Leader View</button>
+      <button class="tab" onclick="switchTab('targets',this)">Targets</button>
+    </div>
+  </div>
+
+  <div id="tab-pipeline">
+    <div class="filters">
+      <select class="filter-select" id="f-leader" onchange="renderTable()"><option value="">All Leaders</option></select>
+      <select class="filter-select" id="f-status" onchange="renderTable()">
+        <option value="">All Status</option>
+        <option>Selected</option><option>Joined</option><option>Offer Sent</option>
+        <option>Offer Not Sent</option><option>Dropped</option><option>Pipeline</option>
+      </select>
+      <select class="filter-select" id="f-city" onchange="renderTable()"><option value="">All Cities</option></select>
+    </div>
+    <div class="table-wrap" id="table-container"></div>
+  </div>
+
+  <div id="tab-leaders" style="display:none"><div class="leader-grid" id="leaders-container"></div></div>
+  <div id="tab-targets" style="display:none"><div id="targets-container"></div></div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Paste WhatsApp Feedback</div>
+      <button class="btn sm" onclick="closeAddModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Paste the raw message from your CBO group. Claude will auto-extract all details.</p>
+    <textarea id="wa-input" placeholder="Example:&#10;Dhammapal Athawale - DCM Pune (Shashank) - Selected&#10;- decent communication&#10;- hunger for incentive&#10;- Will be based in Magarpatta-Hadapsar market&#10;- HR sourced candidate&#10;- CTC - 10% hike on fixed plus 5% kicker"></textarea>
+    <div id="add-feedback" class="feedback"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeAddModal()">Cancel</button>
+      <button class="btn primary" id="parse-btn" onclick="parseAndAdd()"><i class="ti ti-sparkles"></i> Parse & Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="d-name">Candidate Details</div>
+      <button class="btn sm" onclick="closeDetailModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="d-body"></div>
+    <div class="modal-footer">
+      <button class="btn danger" onclick="deleteCandidate()"><i class="ti ti-trash"></i> Remove</button>
+      <button class="btn" onclick="closeDetailModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY='sq_hiring_v1';
+let candidates=[];
+let activeId=null;
+const STATUS_ORDER=['Joined','Selected','Offer Sent','Offer Not Sent','Pipeline','Dropped'];
+
+// ---------- STORAGE ----------
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(candidates));}
+function load(){
+  try{const d=localStorage.getItem(STORAGE_KEY);if(d)candidates=JSON.parse(d);}catch(e){}
+  if(!candidates.length) candidates=sampleData();
+  render();
+}
+
+// ---------- SAMPLE DATA ----------
+function sampleData(){
+  return [
+    {id:'s1',name:'Dhammapal Athawale',role:'DCM',city:'Pune',leader:'Shashank',status:'Selected',rating:4,communication:'Decent',hunger:'High',background:'Rental – NoBroker',market:'Magarpatta-Hadapsar',source:'HR',ctc:'10% hike + 5% kicker (5 CPs)',tags:['Azuro market','Rental background'],notes:'',addedOn:new Date().toISOString()},
+    {id:'s2',name:'Rahul Mehra',role:'KAM',city:'Mumbai',leader:'Vikram',status:'Joined',rating:5,communication:'Excellent',hunger:'Very High',background:'PropTiger',market:'Andheri West',source:'Reference',ctc:'12% hike',tags:['Direct CP exp'],notes:'Strong performer',addedOn:new Date(Date.now()-7*864e5).toISOString()},
+    {id:'s3',name:'Sneha Kulkarni',role:'DCM',city:'Bangalore',leader:'Priya',status:'Offer Sent',rating:3,communication:'Average',hunger:'Medium',background:'MagicBricks',market:'Whitefield',source:'Job Portal',ctc:'8% hike',tags:['Tech market'],notes:'Follow up pending',addedOn:new Date(Date.now()-3*864e5).toISOString()},
+    {id:'s4',name:'Amit Joshi',role:'KAM',city:'NCR',leader:'Rohit',status:'Dropped',rating:2,communication:'Below Average',hunger:'Low',background:'Independent',market:'Noida Sec 62',source:'Walk-in',ctc:'—',tags:['Left process'],notes:'Withdrew after round 2',addedOn:new Date(Date.now()-10*864e5).toISOString()},
+    {id:'s5',name:'Kavya Nair',role:'KAM',city:'Pune',leader:'Shashank',status:'Pipeline',rating:3,communication:'Good',hunger:'Medium',background:'Internal ref',market:'Hinjewadi',source:'Reference',ctc:'TBD',tags:['IT belt'],notes:'Interview pending',addedOn:new Date(Date.now()-864e5).toISOString()},
+    {id:'s6',name:'Mohit Sharma',role:'DCM',city:'Navi Mumbai',leader:'Anil',status:'Offer Not Sent',rating:4,communication:'Very Good',hunger:'High',background:'99acres',market:'Kharghar',source:'HR',ctc:'Under discussion',tags:['KDMC focus'],notes:'Approvals pending',addedOn:new Date(Date.now()-5*864e5).toISOString()},
+  ];
+}
+
+// ---------- RENDER ----------
+function uid(){return Math.random().toString(36).slice(2,8);}
+
+function badgeHtml(s){
+  const m={Selected:'selected',Joined:'joined','Offer Sent':'offered','Offer Not Sent':'pending',Dropped:'dropped',Pipeline:'pipeline'};
+  return `<span class="badge badge-${m[s]||'pending'}">${s}</span>`;
+}
+
+function starsHtml(r){
+  if(!r) return '<span style="color:var(--text3);font-size:11px">—</span>';
+  const colors={5:'#2d6a1f',4:'#63991a',3:'#9a7200',2:'#c0512a',1:'#992222'};
+  let h='<span class="stars">';
+  for(let i=1;i<=5;i++) h+=`<span class="star" style="background:${i<=r?colors[r]:'var(--border)'}"></span>`;
+  return h+'</span>';
+}
+
+function render(){
+  renderMetrics();
+  renderTable();
+  renderLeaders();
+  renderTargets();
+  populateFilters();
+}
+
+function renderMetrics(){
+  const t=candidates.length;
+  const j=candidates.filter(c=>c.status==='Joined').length;
+  const s=candidates.filter(c=>c.status==='Selected').length;
+  const d=candidates.filter(c=>c.status==='Dropped').length;
+  const o=candidates.filter(c=>c.status==='Offer Sent'||c.status==='Offer Not Sent').length;
+  const cr=t>0?Math.round(j/t*100):0;
+  document.getElementById('metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total Pipeline</div><div class="metric-value">${t}</div><div class="metric-sub">candidates tracked</div></div>
+    <div class="metric"><div class="metric-label">Selected</div><div class="metric-value">${s}</div><div class="metric-sub">awaiting offer</div></div>
+    <div class="metric"><div class="metric-label">Offers Out</div><div class="metric-value">${o}</div><div class="metric-sub">pending joining</div></div>
+    <div class="metric"><div class="metric-label">Joined</div><div class="metric-value">${j}</div><div class="metric-sub">active KAMs</div></div>
+    <div class="metric"><div class="metric-label">Dropped</div><div class="metric-value">${d}</div><div class="metric-sub">lost in process</div></div>
+    <div class="metric"><div class="metric-label">Conv. Rate</div><div class="metric-value">${cr}%</div><div class="metric-sub">pipeline → joined</div></div>
+  `;
+}
+
+function populateFilters(){
+  const leaders=[...new Set(candidates.map(c=>c.leader).filter(Boolean))].sort();
+  const cities=[...new Set(candidates.map(c=>c.city).filter(Boolean))].sort();
+  const fl=document.getElementById('f-leader'),fc=document.getElementById('f-city');
+  const cL=fl.value,cC=fc.value;
+  fl.innerHTML='<option value="">All Leaders</option>'+leaders.map(l=>`<option ${l===cL?'selected':''}>${l}</option>`).join('');
+  fc.innerHTML='<option value="">All Cities</option>'+cities.map(c=>`<option ${c===cC?'selected':''}>${c}</option>`).join('');
+}
+
+function getFiltered(){
+  const l=document.getElementById('f-leader').value;
+  const s=document.getElementById('f-status').value;
+  const c=document.getElementById('f-city').value;
+  return candidates.filter(x=>(!l||x.leader===l)&&(!s||x.status===s)&&(!c||x.city===c))
+    .sort((a,b)=>STATUS_ORDER.indexOf(a.status)-STATUS_ORDER.indexOf(b.status));
+}
+
+function renderTable(){
+  const f=getFiltered();
+  const cont=document.getElementById('table-container');
+  if(!f.length){
+    cont.innerHTML=`<div class="empty"><i class="ti ti-users"></i>No candidates found. Paste a WA message to get started.</div>`;
+    return;
+  }
+  cont.innerHTML=`<table>
+    <thead><tr><th>Candidate</th><th>City / Leader</th><th>Status</th><th>Rating</th><th>Background</th><th>Added</th></tr></thead>
+    <tbody>${f.map(c=>`<tr onclick="openDetail('${c.id}')">
+      <td><div class="name-cell">${c.name}</div><div class="sub-text">${c.role||''}</div></td>
+      <td><div>${c.city||'—'}</div><div class="sub-text">${c.leader||''}</div></td>
+      <td>${badgeHtml(c.status)}</td>
+      <td>${starsHtml(c.rating)}</td>
+      <td style="font-size:12px;color:var(--text2)">${c.background||'—'}</td>
+      <td style="font-size:11px;color:var(--text3)">${new Date(c.addedOn).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function renderLeaders(){
+  const lmap={};
+  candidates.forEach(c=>{
+    const l=c.leader||'Unknown';
+    if(!lmap[l]) lmap[l]={name:l,total:0,selected:0,joined:0,dropped:0,offered:0,cities:new Set()};
+    lmap[l].total++;
+    if(c.status==='Selected') lmap[l].selected++;
+    if(c.status==='Joined') lmap[l].joined++;
+    if(c.status==='Dropped') lmap[l].dropped++;
+    if(c.status==='Offer Sent'||c.status==='Offer Not Sent') lmap[l].offered++;
+    if(c.city) lmap[l].cities.add(c.city);
+  });
+  const leaders=Object.values(lmap).sort((a,b)=>b.total-a.total);
+  const maxT=Math.max(...leaders.map(l=>l.total),1);
+  document.getElementById('leaders-container').innerHTML=!leaders.length
+    ?`<div class="empty"><i class="ti ti-chart-bar"></i>No data yet.</div>`
+    :leaders.map(l=>`<div class="leader-card">
+      <div class="leader-header">
+        <div class="leader-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${l.name}</div>
+        <div class="leader-cities">${[...l.cities].join(' · ')}</div>
+      </div>
+      <div class="leader-stats">
+        <div class="lstat"><div class="lstat-num">${l.total}</div><div class="lstat-lbl">Total</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.total/maxT*100)}%;background:var(--text2)"></div></div></div>
+        <div class="lstat"><div class="lstat-num" style="color:var(--green)">${l.selected}</div><div class="lstat-lbl">Selected</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.selected/maxT*100)}%;background:var(--green)"></div></div></div>
+        <div class="lstat"><div class="lstat-num" style="color:var(--amber)">${l.offered}</div><div class="lstat-lbl">Offered</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.offered/maxT*100)}%;background:var(--amber)"></div></div></div>
+        <div class="lstat"><div class="lstat-num" style="color:var(--teal)">${l.joined}</div><div class="lstat-lbl">Joined</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.joined/maxT*100)}%;background:var(--teal)"></div></div></div>
+        <div class="lstat"><div class="lstat-num" style="color:var(--red)">${l.dropped}</div><div class="lstat-lbl">Dropped</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.dropped/maxT*100)}%;background:var(--red)"></div></div></div>
+      </div>
+    </div>`).join('');
+}
+
+const TARGETS={
+  Shashank:{target:5,currentKAMs:8,juneTarget:12},
+  Vikram:{target:4,currentKAMs:6,juneTarget:9},
+  Priya:{target:3,currentKAMs:7,juneTarget:9},
+  Rohit:{target:6,currentKAMs:5,juneTarget:10},
+  Anil:{target:4,currentKAMs:4,juneTarget:7},
+};
+
+function renderTargets(){
+  const leaders=[...new Set(candidates.map(c=>c.leader).filter(Boolean))].sort();
+  let html='';
+  leaders.forEach(l=>{
+    const t=TARGETS[l]||{target:3,currentKAMs:0,juneTarget:0};
+    const joined=candidates.filter(c=>c.leader===l&&c.status==='Joined').length;
+    const pct=t.target>0?Math.min(Math.round(joined/t.target*100),100):0;
+    const fillColor=pct>=80?'var(--green)':pct>=50?'#63991a':'var(--amber)';
+    html+=`<div class="target-card">
+      <div class="target-header">
+        <div style="font-weight:600;font-size:14px">${l}</div>
+        <div style="font-size:11px;color:var(--text2)">Target: ${t.target} new KAMs by June end</div>
+      </div>
+      <div class="target-mini-grid">
+        <div class="mini-metric"><div class="mini-label">Current KAMs</div><div class="mini-val">${t.currentKAMs}</div></div>
+        <div class="mini-metric"><div class="mini-label">New Joined</div><div class="mini-val">${joined}</div></div>
+        <div class="mini-metric"><div class="mini-label">Hiring Target</div><div class="mini-val">${t.target}</div></div>
+        <div class="mini-metric"><div class="mini-label">June Team Size</div><div class="mini-val">${t.juneTarget}</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:6px">Hiring progress — ${pct}% of target</div>
+      <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${fillColor}"></div></div><span class="progress-text">${joined}/${t.target}</span></div>
+    </div>`;
+  });
+  if(!html) html=`<div class="empty"><i class="ti ti-target"></i>Add candidates to see target tracking.</div>`;
+  document.getElementById('targets-container').innerHTML=html;
+}
+
+// ---------- TABS ----------
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['pipeline','leaders','targets'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
+}
+
+// ---------- MODALS ----------
+function openAddModal(){document.getElementById('add-modal').classList.add('open');document.getElementById('add-feedback').style.display='none';}
+function closeAddModal(){document.getElementById('add-modal').classList.remove('open');document.getElementById('wa-input').value='';}
+
+function openDetail(id){
+  activeId=id;
+  const c=candidates.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('d-name').textContent=c.name;
+  const ratingLabels=['','Weak','Below Avg','Average','Good','Strong'];
+  document.getElementById('d-body').innerHTML=`
+    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-val">${badgeHtml(c.status)}</div></div>
+    <div class="detail-row"><div class="detail-label">Role</div><div class="detail-val">${c.role||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">City</div><div class="detail-val">${c.city||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Leader</div><div class="detail-val">${c.leader||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Rating</div><div class="detail-val">${starsHtml(c.rating)} <span style="font-size:11px;color:var(--text2);margin-left:6px">${ratingLabels[c.rating]||''}</span></div></div>
+    <div class="detail-row"><div class="detail-label">Communication</div><div class="detail-val">${c.communication||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Hunger</div><div class="detail-val">${c.hunger||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Background</div><div class="detail-val">${c.background||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Market</div><div class="detail-val">${c.market||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Source</div><div class="detail-val">${c.source||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">CTC</div><div class="detail-val">${c.ctc||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Tags</div><div class="detail-val">${(c.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')||'—'}</div></div>
+    ${c.notes?`<div class="detail-row"><div class="detail-label">Notes</div><div class="detail-val">${c.notes}</div></div>`:''}
+    <div class="detail-row"><div class="detail-label">Update Status</div><div class="detail-val"><div class="status-actions">${STATUS_ORDER.filter(s=>s!==c.status).map(s=>`<button class="btn sm" onclick="updateStatus('${c.id}','${s}')">${s}</button>`).join('')}</div></div></div>
+    <div class="detail-row"><div class="detail-label">Added</div><div class="detail-val" style="font-size:11px;color:var(--text2)">${new Date(c.addedOn).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div></div>
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function closeDetailModal(){document.getElementById('detail-modal').classList.remove('open');activeId=null;}
+
+function updateStatus(id,status){
+  const c=candidates.find(x=>x.id===id);
+  if(c){c.status=status;save();render();openDetail(id);}
+}
+
+function deleteCandidate(){
+  if(!activeId||!confirm('Remove this candidate?')) return;
+  candidates=candidates.filter(c=>c.id!==activeId);
+  save();render();closeDetailModal();
+}
+
+// ---------- AI PARSE ----------
+async function parseAndAdd(){
+  const text=document.getElementById('wa-input').value.trim();
+  if(!text){showFb('Paste a message first.','error');return;}
+  const btn=document.getElementById('parse-btn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Parsing...';
+  showFb('Claude is reading the message...','loading');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:`You are a hiring data parser for a real estate KAM hiring tracker in India. Parse this WhatsApp message and return ONLY a valid JSON object. No markdown, no preamble, no backticks.
+
+Fields:
+{
+  "name": "full candidate name",
+  "role": "KAM or DCM or AM or similar role",
+  "city": "one of: Mumbai / Pune / Bangalore / NCR / Navi Mumbai / KDMC",
+  "leader": "reporting manager name (usually in parentheses)",
+  "status": "one of: Selected / Dropped / Joined / Offer Sent / Offer Not Sent / Pipeline",
+  "communication": "one of: Excellent / Very Good / Good / Decent / Average / Below Average / Poor",
+  "hunger": "one of: Very High / High / Medium / Low",
+  "background": "previous company or domain",
+  "market": "market area they will cover",
+  "source": "one of: HR / Reference / Walk-in / Job Portal / Internal",
+  "ctc": "CTC terms as mentioned",
+  "rating": 4,
+  "tags": ["2-4 short highlights"],
+  "notes": "anything else important"
+}
+
+rating 1-5: 5=strong hunger+exp+comm, 4=good overall, 3=average, 2=weak signals, 1=concerns.
+Use null for missing fields.
+
+Message:
+${text}`}]
+      })
+    });
+    const data=await res.json();
+    const raw=data.content.map(i=>i.text||'').join('');
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const p=JSON.parse(clean);
+    const candidate={
+      id:uid(),name:p.name||'Unknown',role:p.role||'KAM',city:p.city||'',leader:p.leader||'',
+      status:p.status||'Pipeline',communication:p.communication||'',hunger:p.hunger||'',
+      background:p.background||'',market:p.market||'',source:p.source||'',ctc:p.ctc||'',
+      rating:p.rating||3,tags:p.tags||[],notes:p.notes||'',addedOn:new Date().toISOString()
+    };
+    candidates.unshift(candidate);
+    save();render();
+    showFb(`✓ Added: ${candidate.name} — ${candidate.status} — ${candidate.city}`,'success');
+    setTimeout(closeAddModal,1400);
+  }catch(e){
+    showFb('Could not parse. Check your internet connection and try again.','error');
+  }finally{
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i> Parse & Add';
+  }
+}
+
+function showFb(msg,type){
+  const el=document.getElementById('add-feedback');
+  el.textContent=msg;el.className='feedback fb-'+type;el.style.display='block';
+}
+
+// ---------- THEME ----------
+function toggleTheme(){
+  const t=document.body.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.body.setAttribute('data-theme',t==='dark'?'dark':'');
+  localStorage.setItem('sq_theme',t);
+}
+(function(){
+  if(localStorage.getItem('sq_theme')==='dark') document.body.setAttribute('data-theme','dark');
+})();
+
+// ---------- INIT ----------
+load();
+</script>
+</body>
+</html>
