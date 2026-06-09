@@ -3,52 +3,24 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Hiring Tracker — Square Yards KAM Pipeline</title>
+<title>SQY — PC Hiring Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f5f4f0;
-  --surface:#ffffff;
-  --surface2:#f0ede8;
-  --border:#e2ddd8;
-  --border2:#ccc8c2;
-  --text:#1a1816;
-  --text2:#6b6760;
-  --text3:#9e9a94;
-  --green-bg:#e8f5e0;--green:#2d6a1f;
-  --red-bg:#fceaea;--red:#992222;
-  --amber-bg:#fef3db;--amber:#7a4d10;
-  --blue-bg:#e6f0fb;--blue:#1a4f8a;
-  --purple-bg:#eeedfd;--purple:#4a3db0;
-  --teal-bg:#e0f5ee;--teal:#0e6b50;
-  --gray-bg:#eeece8;--gray:#555350;
-  --radius:10px;--radius-lg:14px;
-  --font:'DM Sans',sans-serif;
-  --shadow:0 1px 3px rgba(0,0,0,.08);
-}
-[data-theme=dark]{
-  --bg:#111110;--surface:#1c1b19;--surface2:#252421;
-  --border:#2e2c29;--border2:#3d3b37;
-  --text:#f0ede8;--text2:#9e9a94;--text3:#6b6760;
-  --green-bg:#1a2e15;--green:#7ecb6a;
-  --red-bg:#2e1515;--red:#f08080;
-  --amber-bg:#2a1e09;--amber:#f0b860;
-  --blue-bg:#0e1e30;--blue:#7ab4f0;
-  --purple-bg:#1a1640;--purple:#a89ef5;
-  --teal-bg:#0a2119;--teal:#5fd4a8;
-  --gray-bg:#1e1d1b;--gray:#b0aba4;
-}
+:root{--bg:#f5f4f0;--surface:#fff;--surface2:#f0ede8;--border:#e2ddd8;--border2:#ccc8c2;--text:#1a1816;--text2:#6b6760;--text3:#9e9a94;--green-bg:#e8f5e0;--green:#2d6a1f;--red-bg:#fceaea;--red:#992222;--amber-bg:#fef3db;--amber:#7a4d10;--purple-bg:#eeedfd;--purple:#4a3db0;--teal-bg:#e0f5ee;--teal:#0e6b50;--gray-bg:#eeece8;--gray:#555350;--radius:10px;--radius-lg:14px;--font:'DM Sans',sans-serif;--shadow:0 1px 3px rgba(0,0,0,.08)}
+[data-theme=dark]{--bg:#111110;--surface:#1c1b19;--surface2:#252421;--border:#2e2c29;--border2:#3d3b37;--text:#f0ede8;--text2:#9e9a94;--text3:#6b6760;--green-bg:#1a2e15;--green:#7ecb6a;--red-bg:#2e1515;--red:#f08080;--amber-bg:#2a1e09;--amber:#f0b860;--purple-bg:#1a1640;--purple:#a89ef5;--teal-bg:#0a2119;--teal:#5fd4a8;--gray-bg:#1e1d1b;--gray:#b0aba4}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;transition:background .2s,color .2s}
 .app{max-width:1100px;margin:0 auto;padding:1.5rem 1rem}
-/* HEADER */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;gap:12px;flex-wrap:wrap}
-.header-left h1{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-.02em}
+.header-left h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
 .header-left p{font-size:12px;color:var(--text2);margin-top:2px}
 .header-right{display:flex;gap:8px;align-items:center}
-/* BUTTONS */
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:inline-block;margin-right:4px;transition:background .3s}
+.sync-dot.live{background:#2d6a1f}
+.sync-dot.error{background:#992222}
+.sync-status{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px}
 .btn{padding:8px 16px;font-size:13px;font-weight:500;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:var(--font)}
 .btn:hover{background:var(--surface2)}
 .btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
@@ -57,21 +29,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .btn.danger{color:var(--red);border-color:var(--red)}
 .btn.danger:hover{background:var(--red-bg)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-/* METRICS */
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
 .metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.1rem}
 .metric-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.metric-value{font-size:24px;font-weight:600;color:var(--text);line-height:1}
+.metric-value{font-size:24px;font-weight:600;line-height:1}
 .metric-sub{font-size:11px;color:var(--text3);margin-top:4px}
-/* TABS */
 .tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius);padding:3px;margin-bottom:1.25rem;width:fit-content}
 .tab{padding:6px 14px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--text2);transition:all .15s;border:none;background:none;font-family:var(--font)}
 .tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
-/* FILTERS */
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
 .filter-select{padding:6px 10px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer;font-family:var(--font)}
-.filter-label{font-size:12px;color:var(--text2);margin-left:2px}
-/* TABLE */
 .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 table{width:100%;border-collapse:collapse}
 th{text-align:left;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--surface2)}
@@ -80,7 +47,6 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--surface2);cursor:pointer}
 .name-cell{font-weight:500;font-size:13px}
 .sub-text{font-size:11px;color:var(--text2);margin-top:2px}
-/* BADGES */
 .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
 .badge-selected{background:var(--green-bg);color:var(--green)}
 .badge-joined{background:var(--teal-bg);color:var(--teal)}
@@ -88,24 +54,20 @@ tr:hover td{background:var(--surface2);cursor:pointer}
 .badge-pending{background:var(--gray-bg);color:var(--gray)}
 .badge-dropped{background:var(--red-bg);color:var(--red)}
 .badge-pipeline{background:var(--purple-bg);color:var(--purple)}
-/* RATING STARS */
+.badge-rejected{background:var(--red-bg);color:var(--red)}
 .stars{display:inline-flex;gap:3px;align-items:center}
 .star{width:9px;height:9px;border-radius:2px}
-/* LEADER CARDS */
 .leader-grid{display:flex;flex-direction:column;gap:10px}
 .leader-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem}
 .leader-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;flex-wrap:wrap}
 .leader-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
-.leader-cities{font-size:11px;color:var(--text2)}
-.leader-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.leader-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 .lstat{text-align:center}
 .lstat-num{font-size:18px;font-weight:600}
 .lstat-lbl{font-size:10px;color:var(--text2);margin-top:2px}
 .lstat-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
 .lstat-fill{height:100%;border-radius:2px}
-/* TARGET CARDS */
 .target-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;margin-bottom:10px}
-.target-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
 .target-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
 .mini-metric{background:var(--surface2);border-radius:var(--radius);padding:.7rem .85rem}
 .mini-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
@@ -114,7 +76,6 @@ tr:hover td{background:var(--surface2);cursor:pointer}
 .progress-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .progress-fill{height:100%;border-radius:3px;transition:width .5s}
 .progress-text{font-size:11px;color:var(--text2);white-space:nowrap}
-/* MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
 .overlay.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;max-width:520px;width:100%;margin:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
@@ -126,86 +87,82 @@ tr:hover td{background:var(--surface2);cursor:pointer}
 .detail-val{color:var(--text);flex:1}
 .tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;background:var(--surface2);color:var(--text2);margin:2px 2px 0 0;border:1px solid var(--border)}
 .status-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-/* TEXTAREA */
 textarea{width:100%;min-height:110px;padding:12px;font-size:13px;font-family:var(--font);border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);resize:vertical;line-height:1.6}
 textarea:focus{outline:none;border-color:var(--text)}
-/* FEEDBACK */
 .feedback{padding:10px 12px;border-radius:var(--radius);font-size:12px;margin-top:10px;display:none}
 .fb-success{background:var(--green-bg);color:var(--green)}
 .fb-error{background:var(--red-bg);color:var(--red)}
 .fb-loading{background:var(--purple-bg);color:var(--purple)}
-/* EMPTY */
 .empty{text-align:center;padding:3rem 1rem;color:var(--text2)}
 .empty i{font-size:36px;opacity:.3;display:block;margin-bottom:10px}
-/* MOBILE */
-@media(max-width:600px){
-  .metrics{grid-template-columns:repeat(3,1fr)}
-  .leader-stats{grid-template-columns:repeat(3,1fr)}
-  .target-mini-grid{grid-template-columns:repeat(2,1fr)}
-  th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:none}
-}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap}
+.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(3,1fr)}.leader-stats{grid-template-columns:repeat(3,1fr)}.target-mini-grid{grid-template-columns:repeat(2,1fr)}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}}
 </style>
 </head>
 <body>
-<div class="app">
-
+<div id="loading-screen" class="loading-overlay">
+  <div class="spinner"></div>
+  <div style="font-size:13px;color:var(--text2)">Loading candidates...</div>
+</div>
+<div class="app" style="display:none" id="main-app">
   <div class="header">
     <div class="header-left">
-      <h1>Hiring Tracker</h1>
-      <p>KAM Pipeline · Square Yards · FY 2025–26</p>
+      <h1>SQY — PC Hiring Tracker</h1>
+      <p>KAM Pipeline · FY 2025–26</p>
     </div>
     <div class="header-right">
-      <button class="btn" onclick="toggleTheme()" title="Toggle dark mode"><i class="ti ti-moon-stars"></i></button>
+      <div class="sync-status"><span class="sync-dot" id="sync-dot"></span><span id="sync-text">Connecting...</span></div>
+      <button class="btn" onclick="toggleTheme()"><i class="ti ti-moon-stars"></i></button>
       <button class="btn primary" onclick="openAddModal()"><i class="ti ti-clipboard-text"></i> Paste WA Feedback</button>
     </div>
   </div>
-
   <div class="metrics" id="metrics"></div>
-
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
     <div class="tabs">
       <button class="tab active" onclick="switchTab('pipeline',this)">All Candidates</button>
       <button class="tab" onclick="switchTab('leaders',this)">Leader View</button>
       <button class="tab" onclick="switchTab('targets',this)">Targets</button>
     </div>
+    <button class="btn sm" onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
   </div>
-
   <div id="tab-pipeline">
     <div class="filters">
       <select class="filter-select" id="f-leader" onchange="renderTable()"><option value="">All Leaders</option></select>
       <select class="filter-select" id="f-status" onchange="renderTable()">
         <option value="">All Status</option>
         <option>Selected</option><option>Joined</option><option>Offer Sent</option>
-        <option>Offer Not Sent</option><option>Dropped</option><option>Pipeline</option>
+        <option>Offer Not Sent</option><option>Dropped</option><option>Rejected</option><option>Pipeline</option>
       </select>
       <select class="filter-select" id="f-city" onchange="renderTable()"><option value="">All Cities</option></select>
+      <select class="filter-select" id="f-source" onchange="renderTable()">
+        <option value="">All Sources</option><option>Referral</option><option>Recruiter</option>
+      </select>
     </div>
     <div class="table-wrap" id="table-container"></div>
   </div>
-
   <div id="tab-leaders" style="display:none"><div class="leader-grid" id="leaders-container"></div></div>
   <div id="tab-targets" style="display:none"><div id="targets-container"></div></div>
 </div>
 
-<!-- ADD MODAL -->
 <div class="overlay" id="add-modal">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Paste WhatsApp Feedback</div>
       <button class="btn sm" onclick="closeAddModal()"><i class="ti ti-x"></i></button>
     </div>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Paste the raw message from your CBO group. Claude will auto-extract all details.</p>
-    <textarea id="wa-input" placeholder="Example:&#10;Dhammapal Athawale - DCM Pune (Shashank) - Selected&#10;- decent communication&#10;- hunger for incentive&#10;- Will be based in Magarpatta-Hadapsar market&#10;- HR sourced candidate&#10;- CTC - 10% hike on fixed plus 5% kicker"></textarea>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">CBO group ka message paste karo — Claude auto-extract karke database mein save karega.</p>
+    <textarea id="wa-input" placeholder="Example:&#10;Rahul Sharma - KAM Mumbai (Majid) - Selected&#10;- very good communication&#10;- 3 years in Indiamart&#10;- hunger for growth&#10;- CTC - 10% hike"></textarea>
     <div id="add-feedback" class="feedback"></div>
     <div class="modal-footer">
       <button class="btn" onclick="closeAddModal()">Cancel</button>
-      <button class="btn primary" id="parse-btn" onclick="parseAndAdd()"><i class="ti ti-sparkles"></i> Parse & Add</button>
+      <button class="btn primary" id="parse-btn" onclick="parseAndAdd()"><i class="ti ti-sparkles"></i> Parse & Save</button>
     </div>
   </div>
 </div>
 
-<!-- DETAIL MODAL -->
 <div class="overlay" id="detail-modal">
   <div class="modal">
     <div class="modal-header">
@@ -221,60 +178,140 @@ textarea:focus{outline:none;border-color:var(--text)}
 </div>
 
 <script>
-const STORAGE_KEY='sq_hiring_v1';
+const SUPA_URL='https://jstgkhvrhndjohtzaoxh.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzdGdraHZyaG5kam9odHphb3hoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MDcxNzEsImV4cCI6MjA5NjQ4MzE3MX0.wth68368ExlI3fMwr3DXH2iSCc8ufunuhThxMGEkR_M';
+const STATUS_ORDER=['Joined','Selected','Offer Sent','Offer Not Sent','Pipeline','Dropped','Rejected'];
+const SEED_DATA=[{"id":"r001","name":"Himanshu Jaiswal","role":"KAM","city":"NCR","leader":"Amit","status":"Rejected","rating":4,"communication":"Good","hunger":"High","background":"SQY","market":"","source":"Referral","ctc":"CTC - no hike on current fixed","tags":["Real estate","Internal ref","Ex-SQY"],"notes":"offer yet to release- family medical emergency","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Internal reference of leader Deepak. Good communication. Worked in SQY for 11 months, then in real estate. Good communication and hunger for growth. CTC - no hike on current fixed."},{"id":"r002","name":"Manish Rajora","role":"KAM","city":"NCR","leader":"Amit","status":"Joined","rating":5,"communication":"Very Good","hunger":"Very High","background":"","market":"","source":"Referral","ctc":"CTC - hire within 8-10%","tags":["Real estate","Internal ref"],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Very good communication. Confident. Working in real estate. Internal reference of Bijender. Started as dancer then worked up from executive to team leader. hunger for growth and good basics. Overall v"},{"id":"r003","name":"Mohd Suhail","role":"KAM","city":"NCR","leader":"Amit","status":"Joined","rating":4,"communication":"Good","hunger":"Low","background":"Anarock","market":"","source":"Referral","ctc":"CTC - try within 10-12%","tags":["Real estate","Stable career"],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Good communication. Stable career. Working in Anarock, previous experience in real estate. Has worked with Bijender (gurgaon leader) and his reference. CTC - try within 10-12%. Can add kicker of 5% on"},{"id":"r004","name":"Bhavana Thakare","role":"KAM","city":"Pune","leader":"Amit","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Recruiter","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped. Got offer in hometown"},{"id":"r005","name":"Deepak Chauhan","role":"KAM","city":"NCR","leader":"Amit","status":"Joined","rating":3,"communication":"","hunger":"Low","background":"Azuro","market":"","source":"Referral","ctc":"CTC - 3% token hike over current fixed","tags":["Azuro market","Internal ref"],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Internal reference. Has worked with Azuro 2 times earlier. Very good feedback from Sudhanshu. Working in developer as channel head. CTC - 3% token hike over current fixed. Joining within 15 days."},{"id":"r006","name":"Mitra Mehta","role":"KAM","city":"NCR","leader":"Amit","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Recruiter","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped. got better offer"},{"id":"r007","name":"Sujit Mane","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"Indiamart","market":"","source":"Referral","ctc":"CTC aligned with Anshul","tags":["Indiamart background"],"notes":"offer released","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Been in Indiamart for 1 year. Understands field role and hunger for growth. CTC aligned with Anshul."},{"id":"r008","name":"Akash Nagare","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Joined","rating":5,"communication":"Very Good","hunger":"Very High","background":"","market":"","source":"Referral","ctc":"CTC - try within 10-12%","tags":["Stable career"],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Very good communication. Stable career with growth. Risen from executive level and hunger for money and growth. Really liked the profile. CTC - try within 10-12%."},{"id":"r009","name":"Mahesh Raje","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Joined","rating":4,"communication":"Good","hunger":"Low","background":"Anarock, Star Estate","market":"","source":"Referral","ctc":"CTC - no hike, can give 2-4% token hike","tags":[],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Good communication. Last 5 years in syndicate. Currently in Star estate. Before that Anarock and property pistol. Want proof of business (8-9 deals 13 Cr GTV). CTC - no hike, can give 2-4% token hike."},{"id":"r010","name":"Yaqoob","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Dropped","rating":5,"communication":"Very Good","hunger":"Low","background":"","market":"","source":"Referral","ctc":"CTC - Since at low CTC, can give 12-15% hike","tags":["Internal ref","Stable career"],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped in negotiation. Very good communication. Stable career. Internal reference of Anshul. CTC - Since at low CTC, can give 12-15% hike."},{"id":"r011","name":"Ketan Shirkande","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped in negotiation"},{"id":"r012","name":"Kapil Rathore","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped after offer letter"},{"id":"r013","name":"Satish Tiwari","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Resigned after joining"},{"id":"r014","name":"Ranjeet Pandey","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Joined","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Joined"},{"id":"r015","name":"Darshan Vyapari","role":"KAM","city":"Mumbai","leader":"Majid","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"dropped. high salary expectation"},{"id":"r016","name":"Vijay Singh","role":"KAM","city":"Mumbai","leader":"Majid","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"dropped. high salary expectation"},{"id":"r017","name":"Nitesh Kulaye","role":"KAM","city":"Mumbai","leader":"Majid","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"dropped. high salary expectation"},{"id":"r018","name":"Vikas Kashyayao","role":"KAM","city":"Mumbai","leader":"Majid","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"dropped. high salary expectation (T2 Thane)"},{"id":"r019","name":"Sidhant Jadgav","role":"KAM","city":"Mumbai","leader":"Naresh","status":"Dropped","rating":5,"communication":"Very Good","hunger":"Low","background":"99Acres","market":"","source":"Referral","ctc":"CTC - Max 8-10%","tags":["Internal ref"],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped by leader - just wanted offer letter. Very good communication. Aggressive and confident. Internal reference, worked with him in 99acres. CTC - Max 8-10%."},{"id":"r020","name":"Mayank Gupta","role":"KAM","city":"NCR","leader":"Sahil","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"","market":"","source":"Recruiter","ctc":"CTC aligned with Sahil","tags":[],"notes":"Offer not accepted yet. Released on 18th May","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Been in Just Dial for 8 years with 3 promotions. Risen from executive level. Hunger for growth. CTC aligned with Sahil."},{"id":"r021","name":"Moksh Sisodiya","role":"KAM","city":"NCR","leader":"Sahil","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Recruiter","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Rejected"},{"id":"r022","name":"Nikhil Chhimpa","role":"KAM","city":"NCR","leader":"Sahil","status":"Joined","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"Joined","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Offer to be released"},{"id":"r023","name":"Shivanshu Pathak","role":"KAM","city":"NCR","leader":"Sahil","status":"Joined","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"Joined","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Offer to be released"},{"id":"r024","name":"Prateek Tandon","role":"KAM","city":"NCR","leader":"Sahil","status":"Dropped","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped. asking for 30% hike"},{"id":"r025","name":"Sanjay Agarwal","role":"KAM","city":"NCR","leader":"Sahil","status":"Dropped","rating":4,"communication":"","hunger":"Low","background":"Indiamart","market":"","source":"Referral","ctc":"CTC - 10 to 12% hike","tags":["Indiamart background","Stable career"],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"dropped. asking for 30% hike. Very stable career with promotions. Field work in Indiamart. CTC - 10 to 12% hike."},{"id":"r026","name":"Shivam Sharma","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":5,"communication":"Very Good","hunger":"Medium","background":"Byju, Unacademy","market":"","source":"Referral","ctc":"CTC - try within 5-8%","tags":[],"notes":"CTC under discussion","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Very good communication. Done well in Byju's, Unacademy and Zomato. Need proof of incentives. Aggressive and confident. CTC - try within 5-8%. Currently out of job, not above 10%."},{"id":"r027","name":"Arun Kumar","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":4,"communication":"Good","hunger":"Very High","background":"Indiamart","market":"","source":"Referral","ctc":"CTC - Offer upto 10%","tags":["Indiamart background","Stable career"],"notes":"CTC under discussion","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Stable career with promotions. Very good performance in Indiamart. Hunger for earning incentive. Need proof of 11 lakhs incentive. CTC - Offer upto 10%."},{"id":"r028","name":"Shivaraj H","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":5,"communication":"Very Good","hunger":"Medium","background":"","market":"","source":"Referral","ctc":"CTC - 8 to 10% hike","tags":["B2B exp","Stable career"],"notes":"joining on 19th May","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Very good communication. Stable career with growth. Has worked in B2B. CTC - 8 to 10% hike."},{"id":"r029","name":"Sanket","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"","market":"","source":"Referral","ctc":"CTC - 4 lac","tags":["Fresher"],"notes":"joining on 19th May","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Decent communication. Hunger for growth. Fresher/campus hire (passed out 2024). CTC - 4 lac."},{"id":"r030","name":"LD Prasanth","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Rejected","rating":3,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Rejected after background check"},{"id":"r031","name":"Prasanth S","role":"KAM","city":"Mumbai","leader":"Suhas","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"NoBroker","market":"","source":"Referral","ctc":"CTC aligned with Majid and Suhas","tags":["No Broker"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Been microbiologist, then No Broker, then Brick and Bolt. Hunger for growth. CTC aligned with Majid and Suhas."},{"id":"r032","name":"Anirudh A","role":"KAM","city":"Mumbai","leader":"Suhas","status":"Joined","rating":5,"communication":"Very Good","hunger":"Very High","background":"","market":"","source":"Referral","ctc":"CTC - Try within 8-10%","tags":["Internal ref","Stable career"],"notes":"Joined","addedOn":"2026-4-01T10-00:00.000Z","remarks":"Internal reference of Suhas. Very good communication and pleasing. Hustler, hunger for growth. Stable career. CTC - Try within 8-10%. Kicker on activation of CPs."},{"id":"r033","name":"Deepak Sharan","role":"KAM","city":"NCR","leader":"Amit","status":"Rejected","rating":1,"communication":"Poor","hunger":"Low","background":"","market":"","source":"Recruiter","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"poor communication"},{"id":"r034","name":"Iqbal Kumbhar","role":"KAM","city":"Mumbai","leader":"Shoeb","status":"Rejected","rating":1,"communication":"","hunger":"Low","background":"","market":"","source":"Referral","ctc":"","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Not a field guy"},{"id":"r035","name":"Aakash Karamchandani","role":"KAM","city":"Pune","leader":"Amit","status":"Selected","rating":3,"communication":"Average","hunger":"Low","background":"Bliss, Syndicate","market":"","source":"Referral","ctc":"CTC aligned with Amit","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. Working in Bliss for last 14 months. Done 26 deals in syndicate. Understands Pune market and projects. CTC aligned with Amit."},{"id":"r036","name":"Vishal Tiwari","role":"KAM","city":"NCR","leader":"Amit","status":"Rejected","rating":1,"communication":"","hunger":"Low","background":"","market":"","source":"Recruiter","ctc":"","tags":["Stable career"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Not stable career, communication Ok"},{"id":"r037","name":"Ankit Patil","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Selected","rating":3,"communication":"Average","hunger":"High","background":"Indiamart","market":"","source":"Referral","ctc":"CTC aligned with Anshul","tags":["Indiamart background","Internal ref"],"notes":"yet to join","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. 2 years in Indiamart with good achievements. Risen from executive level. Hunger for growth. Internal reference of leader Aakash. CTC aligned with Anshul."},{"id":"r038","name":"Gokul Jorwar","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"","market":"","source":"Referral","ctc":"CTC and referral of leader Akash","tags":[],"notes":"offer yet to release","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Risen from field level executive. Hunger for growth. Low CTC and referral of leader Akash. CTC aligned with Anshul."},{"id":"r039","name":"Swapnil Gaikwad","role":"KAM","city":"Pune","leader":"Amit","status":"Selected","rating":3,"communication":"Decent","hunger":"Low","background":"Syndicate","market":"","source":"Recruiter","ctc":"CTC aligned with Amit","tags":["Real estate"],"notes":"offer yet to release","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Been in real estate, worked in syndicate and mandate firm. Can be used for SVs in projects. CTC aligned with Amit."},{"id":"r040","name":"Vishal Khairnar","role":"KAM","city":"Pune","leader":"Amit","status":"Selected","rating":3,"communication":"Average","hunger":"Low","background":"Bliss, Syndicate","market":"","source":"Recruiter","ctc":"CTC aligned with Amit","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. Worked in Bliss syndicate. Can be used for SVs in VJ, VTP etc. CTC aligned with Amit."},{"id":"r041","name":"Geet Budhawalekar","role":"KAM","city":"Mumbai","leader":"Anshul","status":"Selected","rating":4,"communication":"Good","hunger":"High","background":"Xanadu","market":"","source":"Referral","ctc":"CTC aligned with Anshul","tags":[],"notes":"offer yet to release","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Been with Xanadu, Adhiraj developer and running own restaurant business for last 2 years. Hunger for growth and money. CTC aligned with Anshul."},{"id":"r042","name":"Suraj Jirage","role":"KAM","city":"Pune","leader":"Amit","status":"Selected","rating":4,"communication":"Good","hunger":"Low","background":"SQY","market":"","source":"Referral","ctc":"CTC aligned with Amit","tags":["Ex-SQY"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Worked in SQY 2021-22, check performance (promoted twice). Currently in Justo. Can be good for Connect and mandates. CTC aligned with Amit."},{"id":"r043","name":"Tushar Savane","role":"KAM","city":"Mumbai","leader":"Majid","status":"Selected","rating":4,"communication":"Good","hunger":"Low","background":"Trade India","market":"","source":"Referral","ctc":"CTC aligned with Shahrukh and Majid","tags":["Real estate","Stable career"],"notes":"salary discussion pending","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Very stable career - 6 years in Trade India, 3 years in real estate mandate firm with promotions. Understands ground work and sourcing. CTC aligned with Shahrukh and Majid."},{"id":"r044","name":"Devansh Singh","role":"KAM","city":"NCR","leader":"Sahil","status":"Selected","rating":5,"communication":"Good","hunger":"Very High","background":"Hdfc","market":"","source":"Recruiter","ctc":"CTC aligned with Sahil","tags":["Stable career"],"notes":"yet to release offer. 26th joining","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Very confident and hunger for growth and recognition. Stable career in HDFC Ergo and Naukri. Short stint in Oyo. CTC aligned with Sahil. Liked a lot."},{"id":"r045","name":"Vaibhav Lihinar","role":"KAM","city":"Pune","leader":"Amit","status":"Selected","rating":3,"communication":"Decent","hunger":"Very High","background":"Prestige","market":"","source":"Recruiter","ctc":"CTC aligned with Amit","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication, very clear in thought process. 2 years in Prestige Bangalore, 3 years in reality firm selling plots in Pune. Field guy with hunger for hardwork. Can be groomed for CP sourcing. C"},{"id":"r046","name":"Shivam Kumar","role":"KAM","city":"NCR","leader":"Amit","status":"Selected","rating":3,"communication":"Average","hunger":"Low","background":"Indiamart, Housing","market":"","source":"Recruiter","ctc":"CTC - hire within 5-10%","tags":["Indiamart background"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. 4 years in Indiamart then 1 year in Housing. Understands CP psyche. CTC - hire within 5-10%. Not very impressed but low CTC and stable Indiamart career."},{"id":"r047","name":"Vaibhav Sharma","role":"KAM","city":"NCR","leader":"Amit","status":"Selected","rating":4,"communication":"Good","hunger":"High","background":"","market":"","source":"Recruiter","ctc":"CTC - hire within 5-8% with kicker on CP activation","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Mature and pleasing personality. Done field job, shifting from Kanpur to Delhi. Hunger for growth. CTC - hire within 5-8% with kicker on CP activation."},{"id":"r048","name":"Aakash Bhadane","role":"KAM","city":"Mumbai","leader":"Shoeb","status":"Selected","rating":3,"communication":"Average","hunger":"Low","background":"Indiamart, Housing","market":"","source":"Referral","ctc":"CTC - max 5%","tags":["Indiamart background"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. Been in Indiamart, Housing and Pagarbook. Job stability a huge concern - left every company before 1.5 years. Can explore for Dadar region. CTC - max 5%."},{"id":"r049","name":"Ashutosh Pandey","role":"KAM","city":"Mumbai","leader":"Naresh","status":"Selected","rating":5,"communication":"Good","hunger":"Low","background":"","market":"","source":"Referral","ctc":"CTC - hire within 8-10%","tags":["Stable career"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Very clear in thought process. Risen from executive in pharma. Stable career with promotions. Really liked. CTC - hire within 8-10%. Referral by Shoeb."},{"id":"r050","name":"Yogesh Patil","role":"KAM","city":"Mumbai","leader":"Naresh","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"Indiamart","market":"","source":"Referral","ctc":"CTC - manage within 8-10%","tags":["Indiamart background","Internal ref"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Worked in Indiamart for last 1.5 year after MBA and performer. Hunger for growth. CTC - manage within 8-10%. Self sourced candidate."},{"id":"r051","name":"Suraj S","role":"KAM","city":"Mumbai","leader":"Suhas","status":"Selected","rating":5,"communication":"Very Good","hunger":"Low","background":"NoBroker, Mygate","market":"","source":"Referral","ctc":"CTC - 7","tags":["No Broker","Ex-SQY"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Very good communication. Call centre, then No Broker, then SQY 3 months, then Mygate 2+ years. Got promotions. Did 1 sale in SQY in 3 months but left due to cold calls. Liked a lot. CTC - 7.5 lpa, hik"},{"id":"r052","name":"Himanshu Singh","role":"KAM","city":"NCR","leader":"Sahil","status":"Selected","rating":3,"communication":"Decent","hunger":"Low","background":"Star Estate, Savemax","market":"","source":"Recruiter","ctc":"CTC - current 7","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Worked in Bullmen Realty, SaveMax and Star Estate. CTC - current 7.2, max 5-8% hike. Not very impressed due to frequent job changes. Should deliver from month 2."},{"id":"r053","name":"Aakash Tiwari","role":"KAM","city":"Mumbai","leader":"Shahrukh","status":"Selected","rating":3,"communication":"Average","hunger":"Low","background":"Indiamart","market":"","source":"Referral","ctc":"CTC - Max 8-10%","tags":["Indiamart background","Internal ref","Stable career"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. Stable career 5 years in Indiamart with multiple promotions and awards. CTC - Max 8-10%. Self referral by Shahrukh. Not very impressed with personality but can be hard worker."},{"id":"r054","name":"Sonu Sharma","role":"KAM","city":"NCR","leader":"Sahil","status":"Selected","rating":5,"communication":"Very Good","hunger":"Very High","background":"Axis Bank, Indusind","market":"","source":"Recruiter","ctc":"CTC aligned with Sahil","tags":["B2B exp","Stable career"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Very good communication. Clear B2B sales fundamentals. Very stable career - 2 yrs BPO, 2 yrs Axis bank, 3 yrs Indusind bank, 8 yrs Wealth management. Hunger for growth. Really liked. CTC aligned with "},{"id":"r055","name":"Jayprakash Gupta","role":"KAM","city":"Mumbai","leader":"Majid","status":"Selected","rating":4,"communication":"Good","hunger":"Low","background":"","market":"","source":"Referral","ctc":"CTC - Not more than last fixed CTC","tags":["Real estate","Internal ref"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Seasoned sales person. Clear fundamentals. Not from real estate. CTC - Not more than last fixed CTC. Source - Self sourced by Naresh."},{"id":"r056","name":"Srikanth Kumaarsabat","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"Anarock","market":"","source":"Recruiter","ctc":"CTC aligned with Shefali","tags":["Stable career"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Decent communication. Stable career - call centre, local reality firm, Anarock 1.5 years (14 deals in 7 months). Hunger for money. CTC aligned with Shefali. Based in North Bangalore."},{"id":"r057","name":"Hemant Dharaan","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":5,"communication":"Very Good","hunger":"Low","background":"","market":"","source":"Recruiter","ctc":"CTC - Max 8-10% hike","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Very good communication. Army background, smart and presentable. Currently in Ever Ready Industry. CTC - Max 8-10% hike. Based in South East Bangalore."},{"id":"r058","name":"Karry Kushwanth","role":"KAM","city":"Bangalore","leader":"Shefali","status":"Selected","rating":4,"communication":"Good","hunger":"High","background":"","market":"","source":"Referral","ctc":"CTC aligned with Shefali","tags":["Real estate","Internal ref"],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Good communication. Logical and hunger for incentive. Been in real estate. CTC aligned with Shefali. Self referral. Based in South East Bangalore."},{"id":"r059","name":"Akash Shah","role":"KAM","city":"Mumbai","leader":"Naresh","status":"Selected","rating":3,"communication":"Average","hunger":"High","background":"","market":"","source":"Referral","ctc":"CTC aligned with Naresh","tags":[],"notes":"","addedOn":"2026-5-01T10-00:00.000Z","remarks":"Ok communication. Stability in career. Hunger for growth and incentive. Gujarati guy needed for Mulund/Ghatkopar belt. CTC aligned with Naresh."},{"id":"r060","name":"Prashant Gaur","role":"KAM","city":"NCR","leader":"Amit","status":"Selected","rating":4,"communication":"Good","hunger":"Low","background":"Spinny","market":"","source":"Recruiter","ctc":"CTC aligned with Amit","tags":["B2B exp","Stable career"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Good communication. Stable career in Spinny for 4 years with 2 promotions. Done B2B business. Currently in pet care startup. CTC aligned with Amit. Sourced by HR."},{"id":"r061","name":"Sagar Kumar","role":"KAM","city":"NCR","leader":"Amit","status":"Selected","rating":4,"communication":"Good","hunger":"Low","background":"Policybazaar","market":"","source":"Recruiter","ctc":"CTC aligned with Amit","tags":["B2B exp"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Good communication and sorted. Very pleasing personality. Working in PolicyBazaar 1.5 years in B2B dealer profile. CTC aligned with Amit. Sourced by HR."},{"id":"r062","name":"Pratima Urown","role":"KAM","city":"NCR","leader":"Amit","status":"Selected","rating":3,"communication":"Decent","hunger":"Low","background":"","market":"","source":"Referral","ctc":"CTC - at 3 lpa, can offer 10-15%","tags":[],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Decent communication. Working in local CP firm for 2 years at junior level. Experience on Eldeco, Gaur and Godrej projects. Very junior. Worth considering as example for female candidates. CTC - at 3 "},{"id":"r063","name":"Salman Hussain","role":"KAM","city":"Mumbai","leader":"Shoeb","status":"Selected","rating":4,"communication":"Good","hunger":"High","background":"Indiamart","market":"","source":"Referral","ctc":"CTC - Within 8-10%","tags":["Indiamart background","B2B exp"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Good communication. 7 years in Indiamart B2B sales. Okish growth. Hunger for recognition and incentive. Existing KAM Vinay reference. CTC - Within 8-10%. South Mumbai."},{"id":"r064","name":"Indra Dev","role":"KAM","city":"Mumbai","leader":"Majid","status":"Selected","rating":4,"communication":"Good","hunger":"Medium","background":"","market":"","source":"Recruiter","ctc":"CTC - hire within 8-10%","tags":["B2B exp","Stable career"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Good communication. Very stable career with decent growth and recognition. Understands B2B field work. Main driver is incentive. CTC - hire within 8-10%. Sourced by HR. Placed in Borivali."},{"id":"r065","name":"Dhammapal Athawale","role":"KAM","city":"Pune","leader":"Shashank","status":"Selected","rating":3,"communication":"Decent","hunger":"High","background":"NoBroker, Azuro","market":"","source":"Recruiter","ctc":"CTC - 10% hike on fixed plus 5% kicker on activating 5 CPs","tags":["Azuro market","No Broker"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Decent communication. Doing rental similar business in No Broker. Hunger for incentive. Based in Magarpatta-Hadapsar (Azuro stronghold). HR sourced. CTC - 10% hike on fixed plus 5% kicker on activatin"},{"id":"r066","name":"Hrushikesh Narayan Mule","role":"KAM","city":"Pune","leader":"Shashank","status":"Selected","rating":3,"communication":"Average","hunger":"Low","background":"NoBroker, Azuro","market":"","source":"Recruiter","ctc":"CTC - 12 to 15% plus 5% kicker","tags":["Azuro market","No Broker"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Ok communication. Doing lead generation in No Broker for similar business. Based in Viman Nagar (Azuro stronghold). HR sourced. CTC - 12 to 15% plus 5% kicker."},{"id":"r067","name":"Puni Solanki","role":"KAM","city":"Pune","leader":"Shashank","status":"Selected","rating":3,"communication":"","hunger":"Low","background":"Nestaway, SQY","market":"","source":"Referral","ctc":"CTC aligned with Shashank","tags":["Internal ref","Stable career","Ex-SQY"],"notes":"","addedOn":"2026-6-01T10-00:00.000Z","remarks":"Working in Nestaway in similar profile. Stable career. Was working in Portal in SQY - ghar wapsi case. CTC aligned with Shashank. Self referral."}];
+
 let candidates=[];
 let activeId=null;
-const STATUS_ORDER=['Joined','Selected','Offer Sent','Offer Not Sent','Pipeline','Dropped'];
 
-// ---------- STORAGE ----------
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(candidates));}
-function load(){
-  try{const d=localStorage.getItem(STORAGE_KEY);if(d)candidates=JSON.parse(d);}catch(e){}
-  if(!candidates.length) candidates=sampleData();
+async function dbFetch(path,opts={}){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+path,{
+    ...opts,
+    headers:{
+      'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+      'Content-Type':'application/json',
+      ...(opts.headers||{})
+    }
+  });
+  if(!res.ok){const e=await res.text();throw new Error(e);}
+  const t=await res.text();
+  return t?JSON.parse(t):null;
+}
+
+async function loadFromDB(){
+  const rows=await dbFetch('candidates?order=added_on.desc&limit=500');
+  return rows||[];
+}
+
+async function saveCandidate(c){
+  const row={
+    id:c.id,name:c.name,role:c.role,city:c.city,leader:c.leader,
+    status:c.status,rating:c.rating,communication:c.communication,
+    hunger:c.hunger,background:c.background,market:c.market||'',
+    source:c.source,ctc:c.ctc,tags:c.tags||[],notes:c.notes||'',
+    remarks:c.remarks||'',added_on:c.addedOn,updated_at:new Date().toISOString()
+  };
+  await dbFetch('candidates',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify(row)
+  });
+}
+
+async function updateCandidateStatus(id,status){
+  await dbFetch('candidates?id=eq.'+id,{
+    method:'PATCH',
+    body:JSON.stringify({status,updated_at:new Date().toISOString()})
+  });
+}
+
+async function deleteCandidateDB(id){
+  await dbFetch('candidates?id=eq.'+id,{method:'DELETE'});
+}
+
+async function seedDB(){
+  setSyncStatus('seeding');
+  const dbRows=SEED_DATA.map(c=>({
+    id:c.id,name:c.name,role:c.role||'KAM',city:c.city||'',leader:c.leader||'',
+    status:c.status||'Pipeline',rating:c.rating||3,communication:c.communication||'',
+    hunger:c.hunger||'',background:c.background||'',market:c.market||'',
+    source:c.source||'',ctc:c.ctc||'',tags:c.tags||[],notes:c.notes||'',
+    remarks:c.remarks||'',added_on:c.addedOn||new Date().toISOString(),
+    updated_at:new Date().toISOString()
+  }));
+  await dbFetch('candidates',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify(dbRows)
+  });
+}
+
+function dbRowToCandidate(r){
+  return {
+    id:r.id,name:r.name,role:r.role||'KAM',city:r.city||'',
+    leader:r.leader||'',status:r.status||'Pipeline',rating:r.rating||3,
+    communication:r.communication||'',hunger:r.hunger||'',
+    background:r.background||'',market:r.market||'',source:r.source||'',
+    ctc:r.ctc||'',tags:r.tags||[],notes:r.notes||'',remarks:r.remarks||'',
+    addedOn:r.added_on||new Date().toISOString()
+  };
+}
+
+function setSyncStatus(s){
+  const dot=document.getElementById('sync-dot');
+  const txt=document.getElementById('sync-text');
+  if(!dot)return;
+  dot.className='sync-dot';
+  if(s==='live'){dot.classList.add('live');txt.textContent='Live';}
+  else if(s==='error'){dot.classList.add('error');txt.textContent='Offline';}
+  else if(s==='seeding'){txt.textContent='Setting up DB...';}
+  else{txt.textContent='Syncing...';}
+}
+
+async function init(){
+  if(localStorage.getItem('sq_theme')==='dark')document.body.setAttribute('data-theme','dark');
+  try{
+    let rows=await loadFromDB();
+    if(rows.length===0){
+      await seedDB();
+      rows=await loadFromDB();
+    }
+    candidates=rows.map(dbRowToCandidate);
+    setSyncStatus('live');
+  }catch(e){
+    console.error('DB error:',e);
+    setSyncStatus('error');
+    candidates=SEED_DATA.map(c=>({...c}));
+  }
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
   render();
 }
 
-// ---------- SAMPLE DATA ----------
-function sampleData(){
-  return [
-    {id:'s1',name:'Dhammapal Athawale',role:'DCM',city:'Pune',leader:'Shashank',status:'Selected',rating:4,communication:'Decent',hunger:'High',background:'Rental – NoBroker',market:'Magarpatta-Hadapsar',source:'HR',ctc:'10% hike + 5% kicker (5 CPs)',tags:['Azuro market','Rental background'],notes:'',addedOn:new Date().toISOString()},
-    {id:'s2',name:'Rahul Mehra',role:'KAM',city:'Mumbai',leader:'Vikram',status:'Joined',rating:5,communication:'Excellent',hunger:'Very High',background:'PropTiger',market:'Andheri West',source:'Reference',ctc:'12% hike',tags:['Direct CP exp'],notes:'Strong performer',addedOn:new Date(Date.now()-7*864e5).toISOString()},
-    {id:'s3',name:'Sneha Kulkarni',role:'DCM',city:'Bangalore',leader:'Priya',status:'Offer Sent',rating:3,communication:'Average',hunger:'Medium',background:'MagicBricks',market:'Whitefield',source:'Job Portal',ctc:'8% hike',tags:['Tech market'],notes:'Follow up pending',addedOn:new Date(Date.now()-3*864e5).toISOString()},
-    {id:'s4',name:'Amit Joshi',role:'KAM',city:'NCR',leader:'Rohit',status:'Dropped',rating:2,communication:'Below Average',hunger:'Low',background:'Independent',market:'Noida Sec 62',source:'Walk-in',ctc:'—',tags:['Left process'],notes:'Withdrew after round 2',addedOn:new Date(Date.now()-10*864e5).toISOString()},
-    {id:'s5',name:'Kavya Nair',role:'KAM',city:'Pune',leader:'Shashank',status:'Pipeline',rating:3,communication:'Good',hunger:'Medium',background:'Internal ref',market:'Hinjewadi',source:'Reference',ctc:'TBD',tags:['IT belt'],notes:'Interview pending',addedOn:new Date(Date.now()-864e5).toISOString()},
-    {id:'s6',name:'Mohit Sharma',role:'DCM',city:'Navi Mumbai',leader:'Anil',status:'Offer Not Sent',rating:4,communication:'Very Good',hunger:'High',background:'99acres',market:'Kharghar',source:'HR',ctc:'Under discussion',tags:['KDMC focus'],notes:'Approvals pending',addedOn:new Date(Date.now()-5*864e5).toISOString()},
-  ];
-}
-
-// ---------- RENDER ----------
 function uid(){return Math.random().toString(36).slice(2,8);}
 
 function badgeHtml(s){
-  const m={Selected:'selected',Joined:'joined','Offer Sent':'offered','Offer Not Sent':'pending',Dropped:'dropped',Pipeline:'pipeline'};
+  const m={Selected:'selected',Joined:'joined','Offer Sent':'offered','Offer Not Sent':'pending',Dropped:'dropped',Pipeline:'pipeline',Rejected:'rejected'};
   return `<span class="badge badge-${m[s]||'pending'}">${s}</span>`;
 }
 
 function starsHtml(r){
-  if(!r) return '<span style="color:var(--text3);font-size:11px">—</span>';
+  if(!r)return '<span style="color:var(--text3);font-size:11px">—</span>';
   const colors={5:'#2d6a1f',4:'#63991a',3:'#9a7200',2:'#c0512a',1:'#992222'};
   let h='<span class="stars">';
-  for(let i=1;i<=5;i++) h+=`<span class="star" style="background:${i<=r?colors[r]:'var(--border)'}"></span>`;
+  for(let i=1;i<=5;i++)h+=`<span class="star" style="background:${i<=r?colors[r]:'var(--border)'}"></span>`;
   return h+'</span>';
 }
 
-function render(){
-  renderMetrics();
-  renderTable();
-  renderLeaders();
-  renderTargets();
-  populateFilters();
-}
+function render(){renderMetrics();renderTable();renderLeaders();renderTargets();populateFilters();}
 
 function renderMetrics(){
   const t=candidates.length;
   const j=candidates.filter(c=>c.status==='Joined').length;
   const s=candidates.filter(c=>c.status==='Selected').length;
-  const d=candidates.filter(c=>c.status==='Dropped').length;
+  const d=candidates.filter(c=>c.status==='Dropped'||c.status==='Rejected').length;
   const o=candidates.filter(c=>c.status==='Offer Sent'||c.status==='Offer Not Sent').length;
   const cr=t>0?Math.round(j/t*100):0;
   document.getElementById('metrics').innerHTML=`
@@ -282,9 +319,8 @@ function renderMetrics(){
     <div class="metric"><div class="metric-label">Selected</div><div class="metric-value">${s}</div><div class="metric-sub">awaiting offer</div></div>
     <div class="metric"><div class="metric-label">Offers Out</div><div class="metric-value">${o}</div><div class="metric-sub">pending joining</div></div>
     <div class="metric"><div class="metric-label">Joined</div><div class="metric-value">${j}</div><div class="metric-sub">active KAMs</div></div>
-    <div class="metric"><div class="metric-label">Dropped</div><div class="metric-value">${d}</div><div class="metric-sub">lost in process</div></div>
-    <div class="metric"><div class="metric-label">Conv. Rate</div><div class="metric-value">${cr}%</div><div class="metric-sub">pipeline → joined</div></div>
-  `;
+    <div class="metric"><div class="metric-label">Dropped/Rej</div><div class="metric-value">${d}</div><div class="metric-sub">lost in process</div></div>
+    <div class="metric"><div class="metric-label">Conv. Rate</div><div class="metric-value">${cr}%</div><div class="metric-sub">pipeline → joined</div></div>`;
 }
 
 function populateFilters(){
@@ -300,41 +336,39 @@ function getFiltered(){
   const l=document.getElementById('f-leader').value;
   const s=document.getElementById('f-status').value;
   const c=document.getElementById('f-city').value;
-  return candidates.filter(x=>(!l||x.leader===l)&&(!s||x.status===s)&&(!c||x.city===c))
+  const src=document.getElementById('f-source').value;
+  return candidates.filter(x=>(!l||x.leader===l)&&(!s||x.status===s)&&(!c||x.city===c)&&(!src||x.source===src))
     .sort((a,b)=>STATUS_ORDER.indexOf(a.status)-STATUS_ORDER.indexOf(b.status));
 }
 
 function renderTable(){
   const f=getFiltered();
   const cont=document.getElementById('table-container');
-  if(!f.length){
-    cont.innerHTML=`<div class="empty"><i class="ti ti-users"></i>No candidates found. Paste a WA message to get started.</div>`;
-    return;
-  }
+  if(!f.length){cont.innerHTML=`<div class="empty"><i class="ti ti-users"></i>No candidates found.</div>`;return;}
   cont.innerHTML=`<table>
-    <thead><tr><th>Candidate</th><th>City / Leader</th><th>Status</th><th>Rating</th><th>Background</th><th>Added</th></tr></thead>
+    <thead><tr><th>Candidate</th><th>City / Leader</th><th>Status</th><th>Rating</th><th>Source</th><th>Added</th></tr></thead>
     <tbody>${f.map(c=>`<tr onclick="openDetail('${c.id}')">
-      <td><div class="name-cell">${c.name}</div><div class="sub-text">${c.role||''}</div></td>
+      <td><div class="name-cell">${c.name}</div><div class="sub-text">${c.background||''}</div></td>
       <td><div>${c.city||'—'}</div><div class="sub-text">${c.leader||''}</div></td>
       <td>${badgeHtml(c.status)}</td>
       <td>${starsHtml(c.rating)}</td>
-      <td style="font-size:12px;color:var(--text2)">${c.background||'—'}</td>
+      <td style="font-size:11px;color:var(--text2)">${c.source||'—'}</td>
       <td style="font-size:11px;color:var(--text3)">${new Date(c.addedOn).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</td>
-    </tr>`).join('')}</tbody>
-  </table>`;
+    </tr>`).join('')}</tbody></table>`;
 }
 
 function renderLeaders(){
   const lmap={};
   candidates.forEach(c=>{
     const l=c.leader||'Unknown';
-    if(!lmap[l]) lmap[l]={name:l,total:0,selected:0,joined:0,dropped:0,offered:0,cities:new Set()};
+    if(!lmap[l])lmap[l]={name:l,total:0,selected:0,joined:0,dropped:0,offered:0,rejected:0,cities:new Set()};
     lmap[l].total++;
-    if(c.status==='Selected') lmap[l].selected++;
-    if(c.status==='Joined') lmap[l].joined++;
-    if(c.status==='Dropped') lmap[l].dropped++;
-    if(c.status==='Offer Sent'||c.status==='Offer Not Sent') lmap[l].offered++;
-    if(c.city) lmap[l].cities.add(c.city);
+    if(c.status==='Selected')lmap[l].selected++;
+    if(c.status==='Joined')lmap[l].joined++;
+    if(c.status==='Dropped')lmap[l].dropped++;
+    if(c.status==='Rejected')lmap[l].rejected++;
+    if(c.status==='Offer Sent'||c.status==='Offer Not Sent')lmap[l].offered++;
+    if(c.city)lmap[l].cities.add(c.city);
   });
   const leaders=Object.values(lmap).sort((a,b)=>b.total-a.total);
   const maxT=Math.max(...leaders.map(l=>l.total),1);
@@ -343,24 +377,30 @@ function renderLeaders(){
     :leaders.map(l=>`<div class="leader-card">
       <div class="leader-header">
         <div class="leader-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${l.name}</div>
-        <div class="leader-cities">${[...l.cities].join(' · ')}</div>
+        <div style="font-size:11px;color:var(--text2)">${[...l.cities].join(' · ')}</div>
       </div>
       <div class="leader-stats">
         <div class="lstat"><div class="lstat-num">${l.total}</div><div class="lstat-lbl">Total</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.total/maxT*100)}%;background:var(--text2)"></div></div></div>
         <div class="lstat"><div class="lstat-num" style="color:var(--green)">${l.selected}</div><div class="lstat-lbl">Selected</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.selected/maxT*100)}%;background:var(--green)"></div></div></div>
         <div class="lstat"><div class="lstat-num" style="color:var(--amber)">${l.offered}</div><div class="lstat-lbl">Offered</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.offered/maxT*100)}%;background:var(--amber)"></div></div></div>
         <div class="lstat"><div class="lstat-num" style="color:var(--teal)">${l.joined}</div><div class="lstat-lbl">Joined</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.joined/maxT*100)}%;background:var(--teal)"></div></div></div>
-        <div class="lstat"><div class="lstat-num" style="color:var(--red)">${l.dropped}</div><div class="lstat-lbl">Dropped</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.dropped/maxT*100)}%;background:var(--red)"></div></div></div>
+        <div class="lstat"><div class="lstat-num" style="color:var(--red)">${l.dropped+l.rejected}</div><div class="lstat-lbl">Dropped</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round((l.dropped+l.rejected)/maxT*100)}%;background:var(--red)"></div></div></div>
+        <div class="lstat"><div class="lstat-num" style="color:#1a4f8a">${Math.round(l.joined/Math.max(l.total,1)*100)}%</div><div class="lstat-lbl">Conv.</div></div>
       </div>
     </div>`).join('');
 }
 
 const TARGETS={
-  Shashank:{target:5,currentKAMs:8,juneTarget:12},
-  Vikram:{target:4,currentKAMs:6,juneTarget:9},
-  Priya:{target:3,currentKAMs:7,juneTarget:9},
-  Rohit:{target:6,currentKAMs:5,juneTarget:10},
-  Anil:{target:4,currentKAMs:4,juneTarget:7},
+  Amit:{target:6,currentKAMs:12,juneTarget:18},
+  Anshul:{target:4,currentKAMs:7,juneTarget:11},
+  Majid:{target:3,currentKAMs:5,juneTarget:8},
+  Naresh:{target:3,currentKAMs:4,juneTarget:7},
+  Sahil:{target:4,currentKAMs:6,juneTarget:10},
+  Shahrukh:{target:2,currentKAMs:3,juneTarget:5},
+  Shashank:{target:3,currentKAMs:4,juneTarget:7},
+  Shefali:{target:4,currentKAMs:5,juneTarget:9},
+  Shoeb:{target:2,currentKAMs:3,juneTarget:5},
+  Suhas:{target:3,currentKAMs:4,juneTarget:7},
 };
 
 function renderTargets(){
@@ -369,78 +409,93 @@ function renderTargets(){
   leaders.forEach(l=>{
     const t=TARGETS[l]||{target:3,currentKAMs:0,juneTarget:0};
     const joined=candidates.filter(c=>c.leader===l&&c.status==='Joined').length;
+    const selected=candidates.filter(c=>c.leader===l&&c.status==='Selected').length;
     const pct=t.target>0?Math.min(Math.round(joined/t.target*100),100):0;
     const fillColor=pct>=80?'var(--green)':pct>=50?'#63991a':'var(--amber)';
     html+=`<div class="target-card">
-      <div class="target-header">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
         <div style="font-weight:600;font-size:14px">${l}</div>
         <div style="font-size:11px;color:var(--text2)">Target: ${t.target} new KAMs by June end</div>
       </div>
       <div class="target-mini-grid">
         <div class="mini-metric"><div class="mini-label">Current KAMs</div><div class="mini-val">${t.currentKAMs}</div></div>
         <div class="mini-metric"><div class="mini-label">New Joined</div><div class="mini-val">${joined}</div></div>
-        <div class="mini-metric"><div class="mini-label">Hiring Target</div><div class="mini-val">${t.target}</div></div>
-        <div class="mini-metric"><div class="mini-label">June Team Size</div><div class="mini-val">${t.juneTarget}</div></div>
+        <div class="mini-metric"><div class="mini-label">In Pipeline</div><div class="mini-val">${selected}</div></div>
+        <div class="mini-metric"><div class="mini-label">June Target</div><div class="mini-val">${t.juneTarget}</div></div>
       </div>
       <div style="font-size:11px;color:var(--text2);margin-bottom:6px">Hiring progress — ${pct}% of target</div>
       <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${fillColor}"></div></div><span class="progress-text">${joined}/${t.target}</span></div>
     </div>`;
   });
-  if(!html) html=`<div class="empty"><i class="ti ti-target"></i>Add candidates to see target tracking.</div>`;
+  if(!html)html=`<div class="empty"><i class="ti ti-target"></i>Add candidates to see targets.</div>`;
   document.getElementById('targets-container').innerHTML=html;
 }
 
-// ---------- TABS ----------
 function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   ['pipeline','leaders','targets'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
 }
 
-// ---------- MODALS ----------
 function openAddModal(){document.getElementById('add-modal').classList.add('open');document.getElementById('add-feedback').style.display='none';}
 function closeAddModal(){document.getElementById('add-modal').classList.remove('open');document.getElementById('wa-input').value='';}
 
 function openDetail(id){
   activeId=id;
   const c=candidates.find(x=>x.id===id);
-  if(!c) return;
+  if(!c)return;
   document.getElementById('d-name').textContent=c.name;
-  const ratingLabels=['','Weak','Below Avg','Average','Good','Strong'];
+  const rl=['','Weak','Below Avg','Average','Good','Strong'];
   document.getElementById('d-body').innerHTML=`
     <div class="detail-row"><div class="detail-label">Status</div><div class="detail-val">${badgeHtml(c.status)}</div></div>
-    <div class="detail-row"><div class="detail-label">Role</div><div class="detail-val">${c.role||'—'}</div></div>
-    <div class="detail-row"><div class="detail-label">City</div><div class="detail-val">${c.city||'—'}</div></div>
-    <div class="detail-row"><div class="detail-label">Leader</div><div class="detail-val">${c.leader||'—'}</div></div>
-    <div class="detail-row"><div class="detail-label">Rating</div><div class="detail-val">${starsHtml(c.rating)} <span style="font-size:11px;color:var(--text2);margin-left:6px">${ratingLabels[c.rating]||''}</span></div></div>
+    <div class="detail-row"><div class="detail-label">City / Leader</div><div class="detail-val">${c.city||'—'} · ${c.leader||'—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Rating</div><div class="detail-val">${starsHtml(c.rating)} <span style="font-size:11px;color:var(--text2);margin-left:6px">${rl[c.rating]||''}</span></div></div>
     <div class="detail-row"><div class="detail-label">Communication</div><div class="detail-val">${c.communication||'—'}</div></div>
     <div class="detail-row"><div class="detail-label">Hunger</div><div class="detail-val">${c.hunger||'—'}</div></div>
     <div class="detail-row"><div class="detail-label">Background</div><div class="detail-val">${c.background||'—'}</div></div>
-    <div class="detail-row"><div class="detail-label">Market</div><div class="detail-val">${c.market||'—'}</div></div>
     <div class="detail-row"><div class="detail-label">Source</div><div class="detail-val">${c.source||'—'}</div></div>
     <div class="detail-row"><div class="detail-label">CTC</div><div class="detail-val">${c.ctc||'—'}</div></div>
     <div class="detail-row"><div class="detail-label">Tags</div><div class="detail-val">${(c.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')||'—'}</div></div>
-    ${c.notes?`<div class="detail-row"><div class="detail-label">Notes</div><div class="detail-val">${c.notes}</div></div>`:''}
-    <div class="detail-row"><div class="detail-label">Update Status</div><div class="detail-val"><div class="status-actions">${STATUS_ORDER.filter(s=>s!==c.status).map(s=>`<button class="btn sm" onclick="updateStatus('${c.id}','${s}')">${s}</button>`).join('')}</div></div></div>
-    <div class="detail-row"><div class="detail-label">Added</div><div class="detail-val" style="font-size:11px;color:var(--text2)">${new Date(c.addedOn).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div></div>
-  `;
+    ${c.remarks?`<div class="detail-row"><div class="detail-label">Remarks</div><div class="detail-val" style="font-size:12px;color:var(--text2)">${c.remarks}</div></div>`:''}
+    <div class="detail-row"><div class="detail-label">Update Status</div><div class="detail-val"><div class="status-actions">${STATUS_ORDER.filter(s=>s!==c.status).map(s=>`<button class="btn sm" onclick="changeStatus('${c.id}','${s}')">${s}</button>`).join('')}</div></div></div>
+    <div class="detail-row"><div class="detail-label">Added</div><div class="detail-val" style="font-size:11px;color:var(--text2)">${new Date(c.addedOn).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div></div>`;
   document.getElementById('detail-modal').classList.add('open');
 }
 
 function closeDetailModal(){document.getElementById('detail-modal').classList.remove('open');activeId=null;}
 
-function updateStatus(id,status){
-  const c=candidates.find(x=>x.id===id);
-  if(c){c.status=status;save();render();openDetail(id);}
+async function changeStatus(id,status){
+  try{
+    await updateCandidateStatus(id,status);
+    const c=candidates.find(x=>x.id===id);
+    if(c)c.status=status;
+    render();openDetail(id);
+  }catch(e){alert('Could not update. Check connection.');}
 }
 
-function deleteCandidate(){
-  if(!activeId||!confirm('Remove this candidate?')) return;
-  candidates=candidates.filter(c=>c.id!==activeId);
-  save();render();closeDetailModal();
+async function deleteCandidate(){
+  if(!activeId||!confirm('Remove this candidate?'))return;
+  try{
+    await deleteCandidateDB(activeId);
+    candidates=candidates.filter(c=>c.id!==activeId);
+    render();closeDetailModal();
+  }catch(e){alert('Could not delete.');}
 }
 
-// ---------- AI PARSE ----------
+function exportCSV(){
+  const headers=['Name','Role','City','Leader','Status','Rating','Communication','Hunger','Background','Source','CTC','Tags','Remarks','Added'];
+  const rows=candidates.map(c=>[
+    c.name,c.role,c.city,c.leader,c.status,c.rating,c.communication,
+    c.hunger,c.background,c.source,c.ctc,(c.tags||[]).join('; '),
+    c.remarks,new Date(c.addedOn).toLocaleDateString('en-IN')
+  ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='hiring-tracker-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
 async function parseAndAdd(){
   const text=document.getElementById('wa-input').value.trim();
   if(!text){showFb('Paste a message first.','error');return;}
@@ -453,51 +508,33 @@ async function parseAndAdd(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',max_tokens:1000,
-        messages:[{role:'user',content:`You are a hiring data parser for a real estate KAM hiring tracker in India. Parse this WhatsApp message and return ONLY a valid JSON object. No markdown, no preamble, no backticks.
-
-Fields:
-{
-  "name": "full candidate name",
-  "role": "KAM or DCM or AM or similar role",
-  "city": "one of: Mumbai / Pune / Bangalore / NCR / Navi Mumbai / KDMC",
-  "leader": "reporting manager name (usually in parentheses)",
-  "status": "one of: Selected / Dropped / Joined / Offer Sent / Offer Not Sent / Pipeline",
-  "communication": "one of: Excellent / Very Good / Good / Decent / Average / Below Average / Poor",
-  "hunger": "one of: Very High / High / Medium / Low",
-  "background": "previous company or domain",
-  "market": "market area they will cover",
-  "source": "one of: HR / Reference / Walk-in / Job Portal / Internal",
-  "ctc": "CTC terms as mentioned",
-  "rating": 4,
-  "tags": ["2-4 short highlights"],
-  "notes": "anything else important"
-}
-
-rating 1-5: 5=strong hunger+exp+comm, 4=good overall, 3=average, 2=weak signals, 1=concerns.
-Use null for missing fields.
-
-Message:
-${text}`}]
+        messages:[{role:'user',content:`Parse this WhatsApp hiring feedback and return ONLY valid JSON, no markdown, no extra text:
+{"name":"full name","role":"KAM or DCM","city":"Mumbai/Pune/Bangalore/NCR/Navi Mumbai/KDMC","leader":"manager name in brackets","status":"Selected/Dropped/Joined/Offer Sent/Offer Not Sent/Pipeline/Rejected","communication":"Excellent/Very Good/Good/Decent/Average/Below Average/Poor","hunger":"Very High/High/Medium/Low","background":"prev company","market":"area","source":"Referral or Recruiter","ctc":"ctc terms","rating":4,"tags":["tag1","tag2"],"notes":"","remarks":"1-2 line summary"}
+rating 1-5. Use null for missing fields.
+Message: ${text}`}]
       })
     });
     const data=await res.json();
     const raw=data.content.map(i=>i.text||'').join('');
-    const clean=raw.replace(/```json|```/g,'').trim();
-    const p=JSON.parse(clean);
+    const p=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const candidate={
-      id:uid(),name:p.name||'Unknown',role:p.role||'KAM',city:p.city||'',leader:p.leader||'',
-      status:p.status||'Pipeline',communication:p.communication||'',hunger:p.hunger||'',
-      background:p.background||'',market:p.market||'',source:p.source||'',ctc:p.ctc||'',
-      rating:p.rating||3,tags:p.tags||[],notes:p.notes||'',addedOn:new Date().toISOString()
+      id:uid(),name:p.name||'Unknown',role:p.role||'KAM',city:p.city||'',
+      leader:p.leader||'',status:p.status||'Pipeline',communication:p.communication||'',
+      hunger:p.hunger||'',background:p.background||'',market:p.market||'',
+      source:p.source||'',ctc:p.ctc||'',rating:p.rating||3,
+      tags:p.tags||[],notes:p.notes||'',remarks:p.remarks||'',
+      addedOn:new Date().toISOString()
     };
+    await saveCandidate(candidate);
     candidates.unshift(candidate);
-    save();render();
-    showFb(`✓ Added: ${candidate.name} — ${candidate.status} — ${candidate.city}`,'success');
-    setTimeout(closeAddModal,1400);
+    render();
+    showFb(`✓ Saved: ${candidate.name} — ${candidate.status} — ${candidate.city}`,'success');
+    setTimeout(closeAddModal,1500);
   }catch(e){
-    showFb('Could not parse. Check your internet connection and try again.','error');
+    console.error(e);
+    showFb('Parse/save failed. Check connection.','error');
   }finally{
-    btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i> Parse & Add';
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i> Parse & Save';
   }
 }
 
@@ -506,18 +543,13 @@ function showFb(msg,type){
   el.textContent=msg;el.className='feedback fb-'+type;el.style.display='block';
 }
 
-// ---------- THEME ----------
 function toggleTheme(){
   const t=document.body.getAttribute('data-theme')==='dark'?'light':'dark';
   document.body.setAttribute('data-theme',t==='dark'?'dark':'');
   localStorage.setItem('sq_theme',t);
 }
-(function(){
-  if(localStorage.getItem('sq_theme')==='dark') document.body.setAttribute('data-theme','dark');
-})();
 
-// ---------- INIT ----------
-load();
+init();
 </script>
 </body>
 </html>
