@@ -520,17 +520,14 @@ Rules:
 Message to parse:
 ${text}`;
 
-    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyAQ.Ab8RN6L3o0vECsKGQ1Yvj9EUqpJO4w7K9ri4wCp4dhreB30ldA',{
+    const res=await fetch('/.netlify/functions/parse',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{temperature:0.1,maxOutputTokens:1000}
-      })
+      body:JSON.stringify({text})
     });
-    const data=await res.json();
-    const raw=data.candidates[0].content.parts[0].text;
-    const p=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    if(!res.ok) throw new Error('Function error: '+res.status);
+    const p=await res.json();
+    if(p.error) throw new Error(p.error);
     const candidate={
       id:uid(),name:p.name||'Unknown',role:p.role||'KAM',city:p.city||'',
       leader:p.leader||'',status:p.status||'Pipeline',communication:p.communication||'',
