@@ -501,21 +501,35 @@ async function parseAndAdd(){
   if(!text){showFb('Paste a message first.','error');return;}
   const btn=document.getElementById('parse-btn');
   btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Parsing...';
-  showFb('Claude is reading the message...','loading');
+  showFb('AI message padh raha hai...','loading');
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const prompt=`You are a hiring data parser for a real estate company in India. Parse this WhatsApp message and return ONLY valid JSON — no markdown, no backticks, no explanation.
+
+Even if the message has spelling mistakes, short forms, or Hinglish — understand the intent and extract correctly.
+
+Return this exact JSON structure:
+{"name":"full candidate name","role":"KAM or DCM or AM","city":"one of: Mumbai/Pune/Bangalore/NCR/Navi Mumbai/KDMC","leader":"reporting manager name (usually in brackets)","status":"one of: Selected/Dropped/Joined/Offer Sent/Offer Not Sent/Pipeline/Rejected","communication":"one of: Excellent/Very Good/Good/Decent/Average/Below Average/Poor","hunger":"one of: Very High/High/Medium/Low","background":"previous company or domain","market":"market area they will cover","source":"Referral or Recruiter","ctc":"CTC terms as mentioned","rating":4,"tags":["2-4 short highlights"],"notes":"any other important info","remarks":"1-2 line summary of overall feedback"}
+
+Rules:
+- rating is 1-5: 5=excellent overall, 4=good, 3=average, 2=weak, 1=poor
+- If status says "selected" assume Selected, "joined" assume Joined, "drop" or "dropped" assume Dropped
+- Fix spelling mistakes intelligently
+- Use null for genuinely missing fields
+- leader name is usually in brackets like (Shashank) or (Majid)
+
+Message to parse:
+${text}`;
+
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyAQ.Ab8RN6L3o0vECsKGQ1Yvj9EUqpJO4w7K9ri4wCp4dhreB30ldA',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
-        messages:[{role:'user',content:`Parse this WhatsApp hiring feedback and return ONLY valid JSON, no markdown, no extra text:
-{"name":"full name","role":"KAM or DCM","city":"Mumbai/Pune/Bangalore/NCR/Navi Mumbai/KDMC","leader":"manager name in brackets","status":"Selected/Dropped/Joined/Offer Sent/Offer Not Sent/Pipeline/Rejected","communication":"Excellent/Very Good/Good/Decent/Average/Below Average/Poor","hunger":"Very High/High/Medium/Low","background":"prev company","market":"area","source":"Referral or Recruiter","ctc":"ctc terms","rating":4,"tags":["tag1","tag2"],"notes":"","remarks":"1-2 line summary"}
-rating 1-5. Use null for missing fields.
-Message: ${text}`}]
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{temperature:0.1,maxOutputTokens:1000}
       })
     });
     const data=await res.json();
-    const raw=data.content.map(i=>i.text||'').join('');
+    const raw=data.candidates[0].content.parts[0].text;
     const p=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const candidate={
       id:uid(),name:p.name||'Unknown',role:p.role||'KAM',city:p.city||'',
