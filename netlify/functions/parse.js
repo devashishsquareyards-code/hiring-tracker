@@ -3,7 +3,7 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const GEMINI_KEY = 'AIzaSyAQ.Ab8RN6L3o0vECsKGQ1Yvj9EUqpJO4w7K9ri4wCp4dhreB30ldA';
+  const GEMINI_KEY = 'AQ.Ab8RN6L3o0vECsKGQ1Yvj9EUqpJO4w7K9ri4wCp4dhreB30ldA';
 
   try {
     const { text } = JSON.parse(event.body);
@@ -25,7 +25,7 @@ Message:
 ${text}`;
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -48,10 +48,11 @@ ${text}`;
     };
 
   } catch (e) {
+    console.error('Parse error:', e.message);
     return {
       statusCode: 500,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: e.message })
+      body: JSON.stringify({ error: e.message, stack: e.stack })
     };
   }
 };
