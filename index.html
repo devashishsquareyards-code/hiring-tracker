@@ -144,7 +144,7 @@ textarea:focus{outline:none;border-color:var(--text)}
       <button class="tab active" onclick="switchTab('pipeline',this)">All Candidates</button>
       <button class="tab" onclick="switchTab('leaders',this)">Leader View</button>
       <button class="tab" onclick="switchTab('dashboard',this)">Dashboard</button>
-      <button class="tab" onclick="switchTab('targets',this)">Targets</button>
+
     </div>
     <button class="btn sm" onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
   </div>
@@ -167,7 +167,7 @@ textarea:focus{outline:none;border-color:var(--text)}
   <div id="tab-dashboard" style="display:none">
     <div id="dashboard-container"></div>
   </div>
-  <div id="tab-targets" style="display:none"><div id="targets-container"></div></div>
+
 </div>
 
 <div class="overlay" id="add-modal">
@@ -335,7 +335,6 @@ function render(){
   renderMetrics();
   renderTable();
   renderLeaders();
-  renderTargets();
   // re-render dashboard if it's visible
   const dashTab = document.getElementById('tab-dashboard');
   if(dashTab && dashTab.style.display !== 'none') renderDashboard();
@@ -563,7 +562,7 @@ function renderTargets(){
 function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  ['pipeline','leaders','dashboard','targets'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
+  ['pipeline','leaders','dashboard'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
   if(name==='dashboard') renderDashboard();
 }
 
