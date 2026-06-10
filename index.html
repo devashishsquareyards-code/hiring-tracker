@@ -311,6 +311,8 @@ async function init(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('main-app').style.display='block';
   render();
+  // Extra safety - populate filters after short delay to ensure DOM is ready
+  setTimeout(populateFilters, 100);
 }
 
 function uid(){return Math.random().toString(36).slice(2,8);}
@@ -328,7 +330,16 @@ function starsHtml(r){
   return h+'</span>';
 }
 
-function render(){renderMetrics();renderTable();renderLeaders();renderTargets();populateFilters();}
+function render(){
+  populateFilters();
+  renderMetrics();
+  renderTable();
+  renderLeaders();
+  renderTargets();
+  // re-render dashboard if it's visible
+  const dashTab = document.getElementById('tab-dashboard');
+  if(dashTab && dashTab.style.display !== 'none') renderDashboard();
+}
 
 function renderMetrics(){
   const t=candidates.length;
@@ -349,8 +360,16 @@ function renderMetrics(){
 function populateFilters(){
   const leaders=[...new Set(candidates.map(c=>c.leader).filter(Boolean))].sort();
   const cities=[...new Set(candidates.map(c=>c.city).filter(Boolean))].sort();
-  const fl=document.getElementById('f-leader'),fc=document.getElementById('f-city');
-  const cL=fl.value,cC=fc.value;
+  
+  const fl=document.getElementById('f-leader');
+  const fc=document.getElementById('f-city');
+  const fs=document.getElementById('f-status');
+  const fsrc=document.getElementById('f-source');
+  
+  if(!fl||!fc) return;
+  
+  const cL=fl.value, cC=fc.value;
+  
   fl.innerHTML='<option value="">All Leaders</option>'+leaders.map(l=>`<option ${l===cL?'selected':''}>${l}</option>`).join('');
   fc.innerHTML='<option value="">All Cities</option>'+cities.map(c=>`<option ${c===cC?'selected':''}>${c}</option>`).join('');
 }
@@ -647,14 +666,19 @@ ${text}`;
       tags:p.tags||[],notes:p.notes||'',remarks:p.remarks||'',
       addedOn:new Date().toISOString()
     };
-    await saveCandidate(candidate);
+    // Try to save to DB, but don't block UI if it fails
+    try {
+      await saveCandidate(candidate);
+    } catch(dbErr) {
+      console.warn('DB save warning:', dbErr.message);
+    }
     candidates.unshift(candidate);
     render();
     showFb(`✓ Saved: ${candidate.name} — ${candidate.status} — ${candidate.city}`,'success');
     setTimeout(closeAddModal,1500);
   }catch(e){
     console.error(e);
-    showFb('Parse/save failed. Check connection.','error');
+    showFb('Could not parse message. Try again.','error');
   }finally{
     btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i> Parse & Save';
   }
