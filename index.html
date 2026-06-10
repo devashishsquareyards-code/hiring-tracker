@@ -97,6 +97,25 @@ textarea:focus{outline:none;border-color:var(--text)}
 .empty i{font-size:36px;opacity:.3;display:block;margin-bottom:10px}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap}
 .loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.dash-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border)}
+.dash-table th{padding:9px 12px;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--surface2);white-space:nowrap;text-align:center}
+.dash-table th:first-child{text-align:left}
+.dash-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);text-align:center;vertical-align:middle}
+.dash-table td:first-child{text-align:left;font-weight:500}
+.dash-table tr:last-child td{border-bottom:none;font-weight:600;background:var(--surface2)}
+.dash-table tr:hover td{background:var(--surface2)}
+.dash-num{font-size:15px;font-weight:600}
+.edit-target-btn{padding:3px 8px;font-size:11px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font)}
+.edit-target-btn:hover{background:var(--surface2);color:var(--text)}
+.date-filter-wrap{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.date-input{padding:6px 10px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:var(--font)}
+.dash-section-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin:1.25rem 0 8px}
+.target-edit-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:10px}
+.input-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px}
+.input-group{display:flex;flex-direction:column;gap:4px}
+.input-group label{font-size:11px;color:var(--text2)}
+.input-group input{padding:6px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:var(--font)}
+.input-group input:focus{outline:none;border-color:var(--text)}
 .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.metrics{grid-template-columns:repeat(3,1fr)}.leader-stats{grid-template-columns:repeat(3,1fr)}.target-mini-grid{grid-template-columns:repeat(2,1fr)}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none}}
@@ -124,6 +143,7 @@ textarea:focus{outline:none;border-color:var(--text)}
     <div class="tabs">
       <button class="tab active" onclick="switchTab('pipeline',this)">All Candidates</button>
       <button class="tab" onclick="switchTab('leaders',this)">Leader View</button>
+      <button class="tab" onclick="switchTab('dashboard',this)">Dashboard</button>
       <button class="tab" onclick="switchTab('targets',this)">Targets</button>
     </div>
     <button class="btn sm" onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
@@ -144,6 +164,9 @@ textarea:focus{outline:none;border-color:var(--text)}
     <div class="table-wrap" id="table-container"></div>
   </div>
   <div id="tab-leaders" style="display:none"><div class="leader-grid" id="leaders-container"></div></div>
+  <div id="tab-dashboard" style="display:none">
+    <div id="dashboard-container"></div>
+  </div>
   <div id="tab-targets" style="display:none"><div id="targets-container"></div></div>
 </div>
 
@@ -358,50 +381,137 @@ function renderTable(){
 }
 
 function renderLeaders(){
-  const lmap={};
-  candidates.forEach(c=>{
-    const l=c.leader||'Unknown';
-    if(!lmap[l])lmap[l]={name:l,total:0,selected:0,joined:0,dropped:0,offered:0,rejected:0,cities:new Set()};
-    lmap[l].total++;
-    if(c.status==='Selected')lmap[l].selected++;
-    if(c.status==='Joined')lmap[l].joined++;
-    if(c.status==='Dropped')lmap[l].dropped++;
-    if(c.status==='Rejected')lmap[l].rejected++;
-    if(c.status==='Offer Sent'||c.status==='Offer Not Sent')lmap[l].offered++;
-    if(c.city)lmap[l].cities.add(c.city);
+  const targets = getTargets();
+  const leaders = [...new Set(candidates.map(c=>c.leader).filter(Boolean))].sort();
+
+  if(!leaders.length){
+    document.getElementById('leaders-container').innerHTML=`<div class="empty"><i class="ti ti-users"></i>No leaders found.</div>`;
+    return;
+  }
+
+  function initials(name){
+    return name.split(/[\s-]/g).map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+  }
+
+  const cards = leaders.map(l => {
+    const lc = candidates.filter(c=>c.leader===l);
+    const t = targets[l]||{currentKAMs:0,newKAMsMay:0,newKAMsJune:0,totalJuneEnd:0,teamTarget:0,hireTarget:0,tentMay:0,tentJune:0,remarks:''};
+    const joined   = lc.filter(c=>c.status==='Joined').length;
+    const selected = lc.length;
+    const prospect = lc.filter(c=>c.status==='Selected'||c.status==='Offer Sent'||c.status==='Offer Not Sent').length;
+    const dropped  = lc.filter(c=>c.status==='Dropped'||c.status==='Rejected').length;
+    const pct = t.hireTarget>0 ? Math.min(Math.round(joined/t.hireTarget*100),100) : 0;
+    const barColor = pct>=80?'#2d6a1f':pct>=50?'#e8a020':'#e53e3e';
+
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:38px;height:38px;border-radius:50%;background:#1a1816;color:#f0ede8;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${initials(l)}</div>
+          <div>
+            <div style="font-weight:600;font-size:14px;color:var(--text)">${l}</div>
+            <div style="font-size:11px;color:var(--text2)">Current KAMs: ${t.currentKAMs}</div>
+          </div>
+        </div>
+        <button class="btn sm" onclick="openLeaderEdit('${l}')">Edit</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px">
+        <div style="text-align:center;padding:8px 4px;background:var(--surface2);border-radius:8px">
+          <div style="font-size:20px;font-weight:700;color:var(--text)">${selected}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:2px">Selected</div>
+        </div>
+        <div style="text-align:center;padding:8px 4px;background:#e0f5ee;border-radius:8px">
+          <div style="font-size:20px;font-weight:700;color:#0e6b50">${joined}</div>
+          <div style="font-size:10px;color:#0e6b50;margin-top:2px">Joined</div>
+        </div>
+        <div style="text-align:center;padding:8px 4px;background:#eeedfd;border-radius:8px">
+          <div style="font-size:20px;font-weight:700;color:#4a3db0">${prospect}</div>
+          <div style="font-size:10px;color:#4a3db0;margin-top:2px">Prospect</div>
+        </div>
+        <div style="text-align:center;padding:8px 4px;background:#fceaea;border-radius:8px">
+          <div style="font-size:20px;font-weight:700;color:#992222">${dropped}</div>
+          <div style="font-size:10px;color:#992222;margin-top:2px">Dropped</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px">
+          <span>Hiring Progress</span>
+          <span style="font-weight:600;color:var(--text)">${joined}/${t.hireTarget} (${pct}%)</span>
+        </div>
+        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width .4s"></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;margin-bottom:10px">
+        <div style="color:var(--text2)">🎯 Team Target: <strong style="color:var(--text)">${t.teamTarget}</strong></div>
+        <div style="color:var(--text2)">📋 Total June End: <strong style="color:var(--text)">${t.totalJuneEnd}</strong></div>
+        <div style="color:var(--text2)">🔥 Hire Target: <strong style="color:var(--text)">${t.hireTarget}</strong></div>
+        <div style="color:var(--text2)">⏳ Tentative: May <strong style="color:var(--text)">${t.tentMay}</strong> · Jun <strong style="color:var(--text)">${t.tentJune}</strong></div>
+      </div>
+
+      ${t.remarks ? `<div style="background:var(--surface2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--text2);line-height:1.5">📝 ${t.remarks}</div>` : ''}
+    </div>`;
   });
-  const leaders=Object.values(lmap).sort((a,b)=>b.total-a.total);
-  const maxT=Math.max(...leaders.map(l=>l.total),1);
-  document.getElementById('leaders-container').innerHTML=!leaders.length
-    ?`<div class="empty"><i class="ti ti-chart-bar"></i>No data yet.</div>`
-    :leaders.map(l=>`<div class="leader-card">
-      <div class="leader-header">
-        <div class="leader-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${l.name}</div>
-        <div style="font-size:11px;color:var(--text2)">${[...l.cities].join(' · ')}</div>
-      </div>
-      <div class="leader-stats">
-        <div class="lstat"><div class="lstat-num">${l.total}</div><div class="lstat-lbl">Total</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.total/maxT*100)}%;background:var(--text2)"></div></div></div>
-        <div class="lstat"><div class="lstat-num" style="color:var(--green)">${l.selected}</div><div class="lstat-lbl">Selected</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.selected/maxT*100)}%;background:var(--green)"></div></div></div>
-        <div class="lstat"><div class="lstat-num" style="color:var(--amber)">${l.offered}</div><div class="lstat-lbl">Offered</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.offered/maxT*100)}%;background:var(--amber)"></div></div></div>
-        <div class="lstat"><div class="lstat-num" style="color:var(--teal)">${l.joined}</div><div class="lstat-lbl">Joined</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round(l.joined/maxT*100)}%;background:var(--teal)"></div></div></div>
-        <div class="lstat"><div class="lstat-num" style="color:var(--red)">${l.dropped+l.rejected}</div><div class="lstat-lbl">Dropped</div><div class="lstat-bar"><div class="lstat-fill" style="width:${Math.round((l.dropped+l.rejected)/maxT*100)}%;background:var(--red)"></div></div></div>
-        <div class="lstat"><div class="lstat-num" style="color:#1a4f8a">${Math.round(l.joined/Math.max(l.total,1)*100)}%</div><div class="lstat-lbl">Conv.</div></div>
-      </div>
-    </div>`).join('');
+
+  document.getElementById('leaders-container').innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">${cards.join('')}</div>`;
 }
 
-const TARGETS={
-  Amit:{target:6,currentKAMs:12,juneTarget:18},
-  Anshul:{target:4,currentKAMs:7,juneTarget:11},
-  Majid:{target:3,currentKAMs:5,juneTarget:8},
-  Naresh:{target:3,currentKAMs:4,juneTarget:7},
-  Sahil:{target:4,currentKAMs:6,juneTarget:10},
-  Shahrukh:{target:2,currentKAMs:3,juneTarget:5},
-  Shashank:{target:3,currentKAMs:4,juneTarget:7},
-  Shefali:{target:4,currentKAMs:5,juneTarget:9},
-  Shoeb:{target:2,currentKAMs:3,juneTarget:5},
-  Suhas:{target:3,currentKAMs:4,juneTarget:7},
-};
+function openLeaderEdit(leaderName) {
+  const targets = getTargets();
+  const t = targets[leaderName]||{};
+  document.getElementById('d-name').textContent = 'Edit — ' + leaderName;
+  document.getElementById('d-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Current KAMs</label><input type="number" id="le_cur" value="${t.currentKAMs||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Hire Target</label><input type="number" id="le_ht" value="${t.hireTarget||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+May KAMs</label><input type="number" id="le_may" value="${t.newKAMsMay||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+June KAMs</label><input type="number" id="le_jun" value="${t.newKAMsJune||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Total June End</label><input type="number" id="le_jt" value="${t.totalJuneEnd||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Team Target</label><input type="number" id="le_tt" value="${t.teamTarget||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. May</label><input type="number" id="le_tmay" value="${t.tentMay||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. June</label><input type="number" id="le_tjun" value="${t.tentJune||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+    </div>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:var(--text2);text-transform:uppercase">Remarks</label>
+      <input type="text" id="le_rem" value="${t.remarks||''}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%">
+    </div>
+    <input type="hidden" id="le_leader_name" value="${leaderName}">
+  `;
+  document.querySelector('#detail-modal .modal-footer').innerHTML = `
+    <button class="btn" onclick="cancelLeaderEdit()">Cancel</button>
+    <button class="btn primary" onclick="saveLeaderEdit()"><i class="ti ti-device-floppy"></i> Save</button>
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function saveLeaderEdit() {
+  const targets = getTargets();
+  const l = document.getElementById('le_leader_name').value;
+  targets[l] = {
+    currentKAMs:  parseInt(document.getElementById('le_cur').value)||0,
+    hireTarget:   parseInt(document.getElementById('le_ht').value)||0,
+    newKAMsMay:   parseInt(document.getElementById('le_may').value)||0,
+    newKAMsJune:  parseInt(document.getElementById('le_jun').value)||0,
+    totalJuneEnd: parseInt(document.getElementById('le_jt').value)||0,
+    teamTarget:   parseInt(document.getElementById('le_tt').value)||0,
+    tentMay:      parseInt(document.getElementById('le_tmay').value)||0,
+    tentJune:     parseInt(document.getElementById('le_tjun').value)||0,
+    remarks:      document.getElementById('le_rem').value||'',
+  };
+  saveTargets(targets);
+  closeDetailModal();
+  resetDetailFooter();
+  renderLeaders();
+  renderDashboard();
+}
+
+function cancelLeaderEdit() {
+  closeDetailModal();
+  resetDetailFooter();
+}
+
 
 function renderTargets(){
   const leaders=[...new Set(candidates.map(c=>c.leader).filter(Boolean))].sort();
@@ -434,7 +544,8 @@ function renderTargets(){
 function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  ['pipeline','leaders','targets'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
+  ['pipeline','leaders','dashboard','targets'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
+  if(name==='dashboard') renderDashboard();
 }
 
 function openAddModal(){document.getElementById('add-modal').classList.add('open');document.getElementById('add-feedback').style.display='none';}
@@ -559,6 +670,273 @@ function toggleTheme(){
   document.body.setAttribute('data-theme',t==='dark'?'dark':'');
   localStorage.setItem('sq_theme',t);
 }
+
+
+// ==================== DASHBOARD ====================
+
+function getTargets() {
+  const saved = localStorage.getItem('sq_targets_v2');
+  if (saved) return JSON.parse(saved);
+  return {
+    Amit:     {currentKAMs:16, newKAMsMay:1,  newKAMsJune:3,  totalJuneEnd:18, teamTarget:8,  hireTarget:4,  tentMay:1,  tentJune:3,  remarks:'Need recruitment support'},
+    Anshul:   {currentKAMs:2,  newKAMsMay:5,  newKAMsJune:1,  totalJuneEnd:8,  teamTarget:7,  hireTarget:5,  tentMay:5,  tentJune:1,  remarks:'Finding through referrals'},
+    Majid:    {currentKAMs:0,  newKAMsMay:0,  newKAMsJune:0,  totalJuneEnd:0,  teamTarget:0,  hireTarget:0,  tentMay:0,  tentJune:0,  remarks:''},
+    Naresh:   {currentKAMs:4,  newKAMsMay:0,  newKAMsJune:2,  totalJuneEnd:9,  teamTarget:7,  hireTarget:3,  tentMay:0,  tentJune:2,  remarks:'Need recruitment support'},
+    Sahil:    {currentKAMs:8,  newKAMsMay:1,  newKAMsJune:2,  totalJuneEnd:16, teamTarget:12, hireTarget:4,  tentMay:1,  tentJune:2,  remarks:'Need recruitment support'},
+    Shahrukh: {currentKAMs:6,  newKAMsMay:0,  newKAMsJune:4,  totalJuneEnd:10, teamTarget:10, hireTarget:4,  tentMay:0,  tentJune:4,  remarks:'Finding by referral'},
+    Shashank: {currentKAMs:4,  newKAMsMay:0,  newKAMsJune:0,  totalJuneEnd:7,  teamTarget:7,  hireTarget:3,  tentMay:0,  tentJune:0,  remarks:''},
+    Shefali:  {currentKAMs:4,  newKAMsMay:2,  newKAMsJune:3,  totalJuneEnd:8,  teamTarget:10, hireTarget:6,  tentMay:2,  tentJune:3,  remarks:'Need recruitment support'},
+    Shoeb:    {currentKAMs:5,  newKAMsMay:1,  newKAMsJune:2,  totalJuneEnd:8,  teamTarget:9,  hireTarget:4,  tentMay:1,  tentJune:2,  remarks:'Finding through referrals'},
+    Suhas:    {currentKAMs:1,  newKAMsMay:0,  newKAMsJune:0,  totalJuneEnd:6,  teamTarget:5,  hireTarget:4,  tentMay:0,  tentJune:0,  remarks:''},
+  };
+}
+
+function saveTargets(t) { localStorage.setItem('sq_targets_v2', JSON.stringify(t)); }
+
+function renderDashboard() {
+  const fromDate = document.getElementById('dash-from')?.value;
+  const toDate   = document.getElementById('dash-to')?.value;
+  let filtered = [...candidates];
+  if (fromDate) filtered = filtered.filter(c => new Date(c.addedOn) >= new Date(fromDate));
+  if (toDate)   filtered = filtered.filter(c => new Date(c.addedOn) <= new Date(toDate + 'T23:59:59'));
+
+  const targets = getTargets();
+  const leaders = [...new Set(candidates.map(c => c.leader).filter(Boolean))].sort();
+
+  const stats = {};
+  leaders.forEach(l => {
+    const lc = filtered.filter(c => c.leader === l);
+    stats[l] = {
+      selected:       lc.filter(c => !['Dropped','Rejected'].includes(c.status)).length,
+      droppedPre:     lc.filter(c => c.status === 'Dropped' || c.status === 'Rejected').length,
+      offerPending:   lc.filter(c => c.status === 'Offer Not Sent').length,
+      inProspect:     lc.filter(c => c.status === 'Selected').length,
+      ltdOffers:      lc.filter(c => c.status === 'Offer Sent').length,
+      joined:         lc.filter(c => c.status === 'Joined').length,
+      notJoined:      lc.filter(c => c.status === 'Dropped').length,
+    };
+  });
+
+  // Totals row
+  const tot = {selected:0,droppedPre:0,offerPending:0,inProspect:0,ltdOffers:0,joined:0,notJoined:0};
+  leaders.forEach(l => Object.keys(tot).forEach(k => tot[k] += stats[l][k]||0));
+  const totT = {currentKAMs:0,newKAMsMay:0,newKAMsJune:0,totalJuneEnd:0,teamTarget:0,hireTarget:0,tentMay:0,tentJune:0};
+  leaders.forEach(l => { const t=targets[l]||{}; Object.keys(totT).forEach(k => totT[k] += t[k]||0); });
+
+  function numCell(v, color='') {
+    const c = color ? `style="color:${color};font-weight:600"` : 'style="font-weight:500"';
+    return `<td ${c}>${v||0}</td>`;
+  }
+
+  const rows = leaders.map(l => {
+    const s = stats[l];
+    const t = targets[l] || {};
+    const gap = (t.teamTarget||0) - (t.currentKAMs||0) - s.joined;
+    const gapColor = gap > 0 ? '#e53e3e' : '#2d6a1f';
+    return `<tr>
+      <td style="font-weight:600;text-align:left;white-space:nowrap">${l}</td>
+      ${numCell(s.selected,'#2d6a1f')}
+      ${numCell(s.droppedPre,'#992222')}
+      ${numCell(s.offerPending,'#6b6760')}
+      ${numCell(s.inProspect,'#4a3db0')}
+      ${numCell(s.ltdOffers,'#7a4d10')}
+      ${numCell(s.joined,'#0e6b50')}
+      ${numCell(s.notJoined,'#992222')}
+      ${numCell(t.currentKAMs||0)}
+      ${numCell(t.newKAMsMay||0)}
+      ${numCell(t.newKAMsJune||0)}
+      ${numCell(t.totalJuneEnd||0)}
+      ${numCell(t.teamTarget||0,'#1a4f8a')}
+      ${numCell(t.hireTarget||0,'#7a4d10')}
+      <td style="font-weight:600;color:${gapColor}">${gap}</td>
+      ${numCell(t.tentMay||0)}
+      ${numCell(t.tentJune||0)}
+      <td style="font-size:11px;color:var(--text2);text-align:left;max-width:180px;line-height:1.4">${t.remarks||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const totalRow = `<tr style="background:var(--surface2);font-weight:700;border-top:2px solid var(--border2)">
+    <td style="text-align:left;font-weight:700">Total</td>
+    ${numCell(tot.selected,'#2d6a1f')}
+    ${numCell(tot.droppedPre,'#992222')}
+    ${numCell(tot.offerPending,'#6b6760')}
+    ${numCell(tot.inProspect,'#4a3db0')}
+    ${numCell(tot.ltdOffers,'#7a4d10')}
+    ${numCell(tot.joined,'#0e6b50')}
+    ${numCell(tot.notJoined,'#992222')}
+    ${numCell(totT.currentKAMs)}
+    ${numCell(totT.newKAMsMay)}
+    ${numCell(totT.newKAMsJune)}
+    ${numCell(totT.totalJuneEnd)}
+    ${numCell(totT.teamTarget,'#1a4f8a')}
+    ${numCell(totT.hireTarget,'#7a4d10')}
+    <td></td>
+    ${numCell(totT.tentMay)}
+    ${numCell(totT.tentJune)}
+    <td></td>
+  </tr>`;
+
+  const cont = document.getElementById('dashboard-container');
+  cont.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text2);font-weight:500">Date Range:</span>
+        <input type="date" class="filter-select" id="dash-from" value="${fromDate||''}" onchange="renderDashboard()" style="width:140px">
+        <span style="font-size:12px;color:var(--text2)">→</span>
+        <input type="date" class="filter-select" id="dash-to" value="${toDate||''}" onchange="renderDashboard()" style="width:140px">
+        <button class="btn sm" onclick="clearDashDate()">All Time</button>
+        <span style="font-size:11px;color:var(--text3)">${filtered.length} candidates</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn sm" onclick="openTargetEditor()"><i class="ti ti-edit"></i> Edit Targets</button>
+        <button class="btn sm" onclick="exportDashCSV()"><i class="ti ti-download"></i> Export CSV</button>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1200px">
+      <thead>
+        <tr>
+          <th rowspan="2" style="background:#1a1816;color:#f0ede8;padding:10px 12px;text-align:left;min-width:90px;font-size:11px;letter-spacing:.04em;vertical-align:middle">Leader</th>
+          <th colspan="4" style="background:rgba(45,106,31,.15);color:#2d6a1f;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Candidate Pipeline</th>
+          <th colspan="3" style="background:rgba(122,77,16,.12);color:#7a4d10;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Offer Status</th>
+          <th colspan="4" style="background:rgba(26,79,138,.1);color:#1a4f8a;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Team Strength</th>
+          <th colspan="3" style="background:rgba(74,61,176,.1);color:#4a3db0;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Targets & Hiring</th>
+          <th colspan="2" style="background:rgba(14,107,80,.1);color:#0e6b50;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)">Tentative Joining</th>
+          <th rowspan="2" style="background:#1a1816;color:#f0ede8;padding:10px 12px;font-size:11px;letter-spacing:.04em;vertical-align:middle;min-width:150px">Remarks</th>
+        </tr>
+        <tr>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Selected</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Dropped<br>Pre-Offer</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Offer<br>Pending</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">In<br>Prospect</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">LTD<br>Offers</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Joined</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Not Joined/<br>Dropped</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Current<br>KAMs</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">+May</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">+June</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Total<br>June End</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Team<br>Target</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Hire<br>Target</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Gap</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">May</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">June</th>
+        </tr>
+      </thead>
+      <tbody style="font-size:12px">
+        ${rows}
+        ${totalRow}
+      </tbody>
+    </table>
+    </div>
+  `;
+}
+
+function exportDashCSV() {
+  const targets = getTargets();
+  const leaders = [...new Set(candidates.map(c => c.leader).filter(Boolean))].sort();
+  const headers = ['Leader','Selected','Dropped Pre-Offer','Offer Pending','In Prospect','LTD Offers','Joined','Not Joined','Current KAMs','+May','+June','Total June End','Team Target','Hire Target','Gap','Tent May','Tent June','Remarks'];
+  const rows = leaders.map(l => {
+    const lc = candidates.filter(c => c.leader === l);
+    const t = targets[l]||{};
+    const joined = lc.filter(c=>c.status==='Joined').length;
+    const gap = (t.teamTarget||0)-(t.currentKAMs||0)-joined;
+    return [
+      l,
+      lc.filter(c=>!['Dropped','Rejected'].includes(c.status)).length,
+      lc.filter(c=>c.status==='Dropped'||c.status==='Rejected').length,
+      lc.filter(c=>c.status==='Offer Not Sent').length,
+      lc.filter(c=>c.status==='Selected').length,
+      lc.filter(c=>c.status==='Offer Sent').length,
+      joined,
+      lc.filter(c=>c.status==='Dropped').length,
+      t.currentKAMs||0, t.newKAMsMay||0, t.newKAMsJune||0,
+      t.totalJuneEnd||0, t.teamTarget||0, t.hireTarget||0, gap,
+      t.tentMay||0, t.tentJune||0,
+      `"${(t.remarks||'').replace(/"/g,"'")}"`
+    ].join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'hiring-dashboard-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function clearDashDate() {
+  const f=document.getElementById('dash-from');
+  const t=document.getElementById('dash-to');
+  if(f) f.value='';
+  if(t) t.value='';
+  renderDashboard();
+}
+
+function openTargetEditor() {
+  const targets = getTargets();
+  const leaders = [...new Set(candidates.map(c => c.leader).filter(Boolean))].sort();
+  const body = leaders.map(l => {
+    const t = targets[l]||{};
+    return `<div style="background:var(--surface2);border-radius:var(--radius);padding:1rem;margin-bottom:10px">
+      <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:var(--text)">${l}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px">
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Current KAMs</label><input type="number" id="te_${l}_cur" value="${t.currentKAMs||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+May KAMs</label><input type="number" id="te_${l}_may" value="${t.newKAMsMay||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+June KAMs</label><input type="number" id="te_${l}_jun" value="${t.newKAMsJune||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Total June End</label><input type="number" id="te_${l}_jt" value="${t.totalJuneEnd||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Team Target</label><input type="number" id="te_${l}_tt" value="${t.teamTarget||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Hire Target</label><input type="number" id="te_${l}_ht" value="${t.hireTarget||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. May</label><input type="number" id="te_${l}_tmay" value="${t.tentMay||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. June</label><input type="number" id="te_${l}_tjun" value="${t.tentJune||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      </div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Remarks</label><input type="text" id="te_${l}_rem" value="${t.remarks||''}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('d-name').textContent = 'Edit Leader Targets';
+  document.getElementById('d-body').innerHTML = `<div style="max-height:65vh;overflow-y:auto;padding-right:4px">${body}</div>`;
+  document.querySelector('#detail-modal .modal-footer').innerHTML = `
+    <button class="btn" onclick="cancelTargetEdit()">Cancel</button>
+    <button class="btn primary" onclick="saveTargetEdits()"><i class="ti ti-device-floppy"></i> Save All Targets</button>
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function cancelTargetEdit() {
+  closeDetailModal();
+  resetDetailFooter();
+}
+
+function saveTargetEdits() {
+  const targets = getTargets();
+  const leaders = [...new Set(candidates.map(c => c.leader).filter(Boolean))].sort();
+  leaders.forEach(l => {
+    targets[l] = {
+      currentKAMs:  parseInt(document.getElementById('te_'+l+'_cur')?.value)||0,
+      newKAMsMay:   parseInt(document.getElementById('te_'+l+'_may')?.value)||0,
+      newKAMsJune:  parseInt(document.getElementById('te_'+l+'_jun')?.value)||0,
+      totalJuneEnd: parseInt(document.getElementById('te_'+l+'_jt')?.value)||0,
+      teamTarget:   parseInt(document.getElementById('te_'+l+'_tt')?.value)||0,
+      hireTarget:   parseInt(document.getElementById('te_'+l+'_ht')?.value)||0,
+      tentMay:      parseInt(document.getElementById('te_'+l+'_tmay')?.value)||0,
+      tentJune:     parseInt(document.getElementById('te_'+l+'_tjun')?.value)||0,
+      remarks:      document.getElementById('te_'+l+'_rem')?.value||'',
+    };
+  });
+  saveTargets(targets);
+  closeDetailModal();
+  resetDetailFooter();
+  renderDashboard();
+}
+
+function resetDetailFooter() {
+  document.querySelector('#detail-modal .modal-footer').innerHTML = `
+    <button class="btn danger" onclick="deleteCandidate()"><i class="ti ti-trash"></i> Remove</button>
+    <button class="btn" onclick="closeDetailModal()">Close</button>
+  `;
+}
+
+// ==================== END DASHBOARD ====================
 
 init();
 </script>
