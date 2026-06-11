@@ -413,7 +413,7 @@ function renderLeaders(){
 
   const cards = leaders.map(l => {
     const lc = candidates.filter(c=>c.leader===l);
-    const t = targets[l]||{currentKAMs:0,newKAMsMay:0,newKAMsJune:0,totalJuneEnd:0,teamTarget:0,hireTarget:0,tentMay:0,tentJune:0,remarks:''};
+    const t = targets[l]||{currentKAMs:0,newKAMsM0:0,newKAMsM1:0,totalM1End:0,teamTarget:0,hireTarget:0,tentM0:0,tentM1:0,remarks:''};
     const joined   = lc.filter(c=>c.status==='Joined').length;
     const selected = lc.length;
     const prospect = lc.filter(c=>c.status==='Selected'||c.status==='Offer Sent'||c.status==='Offer Not Sent').length;
@@ -464,9 +464,9 @@ function renderLeaders(){
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;margin-bottom:10px">
         <div style="color:var(--text2)">🎯 Team Target: <strong style="color:var(--text)">${t.teamTarget}</strong></div>
-        <div style="color:var(--text2)">📋 Total June End: <strong style="color:var(--text)">${t.totalJuneEnd}</strong></div>
+        <div style="color:var(--text2)">📋 Total M1 End: <strong style="color:var(--text)">${t.totalM1End}</strong></div>
         <div style="color:var(--text2)">🔥 Hire Target: <strong style="color:var(--text)">${t.hireTarget}</strong></div>
-        <div style="color:var(--text2)">⏳ Tentative: May <strong style="color:var(--text)">${t.tentMay}</strong> · Jun <strong style="color:var(--text)">${t.tentJune}</strong></div>
+        <div style="color:var(--text2)">⏳ Tentative: M0 <strong style="color:var(--text)">${t.tentM0}</strong> · M1 <strong style="color:var(--text)">${t.tentM1}</strong></div>
       </div>
 
       ${t.remarks ? `<div style="background:var(--surface2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--text2);line-height:1.5">📝 ${t.remarks}</div>` : ''}
@@ -484,12 +484,12 @@ function openLeaderEdit(leaderName) {
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
       <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Current KAMs</label><input type="number" id="le_cur" value="${t.currentKAMs||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
       <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Hire Target</label><input type="number" id="le_ht" value="${t.hireTarget||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+May KAMs</label><input type="number" id="le_may" value="${t.newKAMsMay||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+June KAMs</label><input type="number" id="le_jun" value="${t.newKAMsJune||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Total June End</label><input type="number" id="le_jt" value="${t.totalJuneEnd||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+M0 KAMs</label><input type="number" id="le_m0" value="${t.newKAMsM0||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+M1 KAMs</label><input type="number" id="le_m1" value="${t.newKAMsM1||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Total M1 End</label><input type="number" id="le_m1end" value="${t.totalM1End||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
       <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Team Target</label><input type="number" id="le_tt" value="${t.teamTarget||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. May</label><input type="number" id="le_tmay" value="${t.tentMay||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. June</label><input type="number" id="le_tjun" value="${t.tentJune||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. M0</label><input type="number" id="le_tm0" value="${t.tentM0||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. M1</label><input type="number" id="le_tm1" value="${t.tentM1||0}" style="padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
     </div>
     <div style="margin-top:10px;display:flex;flex-direction:column;gap:3px">
       <label style="font-size:10px;color:var(--text2);text-transform:uppercase">Remarks</label>
@@ -510,12 +510,12 @@ function saveLeaderEdit() {
   targets[l] = {
     currentKAMs:  parseInt(document.getElementById('le_cur').value)||0,
     hireTarget:   parseInt(document.getElementById('le_ht').value)||0,
-    newKAMsMay:   parseInt(document.getElementById('le_may').value)||0,
-    newKAMsJune:  parseInt(document.getElementById('le_jun').value)||0,
-    totalJuneEnd: parseInt(document.getElementById('le_jt').value)||0,
+    newKAMsM0:   parseInt(document.getElementById('le_m0').value)||0,
+    newKAMsM1:  parseInt(document.getElementById('le_m1').value)||0,
+    totalM1End: parseInt(document.getElementById('le_m1end').value)||0,
     teamTarget:   parseInt(document.getElementById('le_tt').value)||0,
-    tentMay:      parseInt(document.getElementById('le_tmay').value)||0,
-    tentJune:     parseInt(document.getElementById('le_tjun').value)||0,
+    tentM0:      parseInt(document.getElementById('le_tm0').value)||0,
+    tentM1:     parseInt(document.getElementById('le_tm1').value)||0,
     remarks:      document.getElementById('le_rem').value||'',
   };
   saveTargets(targets);
@@ -535,7 +535,7 @@ function renderTargets(){
   const leaders=[...new Set(candidates.map(c=>c.leader).filter(Boolean))].sort();
   let html='';
   leaders.forEach(l=>{
-    const t=TARGETS[l]||{target:3,currentKAMs:0,juneTarget:0};
+    const t=TARGETS[l]||{target:3,currentKAMs:0,m1Target:0};
     const joined=candidates.filter(c=>c.leader===l&&c.status==='Joined').length;
     const selected=candidates.filter(c=>c.leader===l&&c.status==='Selected').length;
     const pct=t.target>0?Math.min(Math.round(joined/t.target*100),100):0;
@@ -543,13 +543,13 @@ function renderTargets(){
     html+=`<div class="target-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
         <div style="font-weight:600;font-size:14px">${l}</div>
-        <div style="font-size:11px;color:var(--text2)">Target: ${t.target} new KAMs by June end</div>
+        <div style="font-size:11px;color:var(--text2)">Target: ${t.target} new KAMs by M1 end</div>
       </div>
       <div class="target-mini-grid">
         <div class="mini-metric"><div class="mini-label">Current KAMs</div><div class="mini-val">${t.currentKAMs}</div></div>
         <div class="mini-metric"><div class="mini-label">New Joined</div><div class="mini-val">${joined}</div></div>
         <div class="mini-metric"><div class="mini-label">In Pipeline</div><div class="mini-val">${selected}</div></div>
-        <div class="mini-metric"><div class="mini-label">June Target</div><div class="mini-val">${t.juneTarget}</div></div>
+        <div class="mini-metric"><div class="mini-label">M1 Target</div><div class="mini-val">${t.m1Target}</div></div>
       </div>
       <div style="font-size:11px;color:var(--text2);margin-bottom:6px">Hiring progress — ${pct}% of target</div>
       <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${fillColor}"></div></div><span class="progress-text">${joined}/${t.target}</span></div>
@@ -701,16 +701,16 @@ function getTargets() {
   const saved = localStorage.getItem('sq_targets_v2');
   if (saved) return JSON.parse(saved);
   return {
-    Amit:     {currentKAMs:16, newKAMsMay:1,  newKAMsJune:3,  totalJuneEnd:18, teamTarget:8,  hireTarget:4,  tentMay:1,  tentJune:3,  remarks:'Need recruitment support'},
-    Anshul:   {currentKAMs:2,  newKAMsMay:5,  newKAMsJune:1,  totalJuneEnd:8,  teamTarget:7,  hireTarget:5,  tentMay:5,  tentJune:1,  remarks:'Finding through referrals'},
-    Majid:    {currentKAMs:0,  newKAMsMay:0,  newKAMsJune:0,  totalJuneEnd:0,  teamTarget:0,  hireTarget:0,  tentMay:0,  tentJune:0,  remarks:''},
-    Naresh:   {currentKAMs:4,  newKAMsMay:0,  newKAMsJune:2,  totalJuneEnd:9,  teamTarget:7,  hireTarget:3,  tentMay:0,  tentJune:2,  remarks:'Need recruitment support'},
-    Sahil:    {currentKAMs:8,  newKAMsMay:1,  newKAMsJune:2,  totalJuneEnd:16, teamTarget:12, hireTarget:4,  tentMay:1,  tentJune:2,  remarks:'Need recruitment support'},
-    Shahrukh: {currentKAMs:6,  newKAMsMay:0,  newKAMsJune:4,  totalJuneEnd:10, teamTarget:10, hireTarget:4,  tentMay:0,  tentJune:4,  remarks:'Finding by referral'},
-    Shashank: {currentKAMs:4,  newKAMsMay:0,  newKAMsJune:0,  totalJuneEnd:7,  teamTarget:7,  hireTarget:3,  tentMay:0,  tentJune:0,  remarks:''},
-    Shefali:  {currentKAMs:4,  newKAMsMay:2,  newKAMsJune:3,  totalJuneEnd:8,  teamTarget:10, hireTarget:6,  tentMay:2,  tentJune:3,  remarks:'Need recruitment support'},
-    Shoeb:    {currentKAMs:5,  newKAMsMay:1,  newKAMsJune:2,  totalJuneEnd:8,  teamTarget:9,  hireTarget:4,  tentMay:1,  tentJune:2,  remarks:'Finding through referrals'},
-    Suhas:    {currentKAMs:1,  newKAMsMay:0,  newKAMsJune:0,  totalJuneEnd:6,  teamTarget:5,  hireTarget:4,  tentMay:0,  tentJune:0,  remarks:''},
+    Amit:     {currentKAMs:16, newKAMsM0:1,  newKAMsM1:3,  totalM1End:18, teamTarget:8,  hireTarget:4,  tentM0:1,  tentM1:3,  remarks:'Need recruitment support'},
+    Anshul:   {currentKAMs:2,  newKAMsM0:5,  newKAMsM1:1,  totalM1End:8,  teamTarget:7,  hireTarget:5,  tentM0:5,  tentM1:1,  remarks:'Finding through referrals'},
+    Majid:    {currentKAMs:0,  newKAMsM0:0,  newKAMsM1:0,  totalM1End:0,  teamTarget:0,  hireTarget:0,  tentM0:0,  tentM1:0,  remarks:''},
+    Naresh:   {currentKAMs:4,  newKAMsM0:0,  newKAMsM1:2,  totalM1End:9,  teamTarget:7,  hireTarget:3,  tentM0:0,  tentM1:2,  remarks:'Need recruitment support'},
+    Sahil:    {currentKAMs:8,  newKAMsM0:1,  newKAMsM1:2,  totalM1End:16, teamTarget:12, hireTarget:4,  tentM0:1,  tentM1:2,  remarks:'Need recruitment support'},
+    Shahrukh: {currentKAMs:6,  newKAMsM0:0,  newKAMsM1:4,  totalM1End:10, teamTarget:10, hireTarget:4,  tentM0:0,  tentM1:4,  remarks:'Finding by referral'},
+    Shashank: {currentKAMs:4,  newKAMsM0:0,  newKAMsM1:0,  totalM1End:7,  teamTarget:7,  hireTarget:3,  tentM0:0,  tentM1:0,  remarks:''},
+    Shefali:  {currentKAMs:4,  newKAMsM0:2,  newKAMsM1:3,  totalM1End:8,  teamTarget:10, hireTarget:6,  tentM0:2,  tentM1:3,  remarks:'Need recruitment support'},
+    Shoeb:    {currentKAMs:5,  newKAMsM0:1,  newKAMsM1:2,  totalM1End:8,  teamTarget:9,  hireTarget:4,  tentM0:1,  tentM1:2,  remarks:'Finding through referrals'},
+    Suhas:    {currentKAMs:1,  newKAMsM0:0,  newKAMsM1:0,  totalM1End:6,  teamTarget:5,  hireTarget:4,  tentM0:0,  tentM1:0,  remarks:''},
   };
 }
 
@@ -743,7 +743,7 @@ function renderDashboard() {
   // Totals row
   const tot = {selected:0,droppedPre:0,offerPending:0,inProspect:0,ltdOffers:0,joined:0,notJoined:0};
   leaders.forEach(l => Object.keys(tot).forEach(k => tot[k] += stats[l][k]||0));
-  const totT = {currentKAMs:0,newKAMsMay:0,newKAMsJune:0,totalJuneEnd:0,teamTarget:0,hireTarget:0,tentMay:0,tentJune:0};
+  const totT = {currentKAMs:0,newKAMsM0:0,newKAMsM1:0,totalM1End:0,teamTarget:0,hireTarget:0,tentM0:0,tentM1:0};
   leaders.forEach(l => { const t=targets[l]||{}; Object.keys(totT).forEach(k => totT[k] += t[k]||0); });
 
   function numCell(v, color='') {
@@ -766,14 +766,14 @@ function renderDashboard() {
       ${numCell(s.joined,'#0e6b50')}
       ${numCell(s.notJoined,'#992222')}
       ${numCell(t.currentKAMs||0)}
-      ${numCell(t.newKAMsMay||0)}
-      ${numCell(t.newKAMsJune||0)}
-      ${numCell(t.totalJuneEnd||0)}
+      ${numCell(t.newKAMsM0||0)}
+      ${numCell(t.newKAMsM1||0)}
+      ${numCell(t.totalM1End||0)}
       ${numCell(t.teamTarget||0,'#1a4f8a')}
       ${numCell(t.hireTarget||0,'#7a4d10')}
       <td style="font-weight:600;color:${gapColor}">${gap}</td>
-      ${numCell(t.tentMay||0)}
-      ${numCell(t.tentJune||0)}
+      ${numCell(t.tentM0||0)}
+      ${numCell(t.tentM1||0)}
       <td style="font-size:11px;color:var(--text2);text-align:left;max-width:180px;line-height:1.4">${t.remarks||'—'}</td>
     </tr>`;
   }).join('');
@@ -788,14 +788,14 @@ function renderDashboard() {
     ${numCell(tot.joined,'#0e6b50')}
     ${numCell(tot.notJoined,'#992222')}
     ${numCell(totT.currentKAMs)}
-    ${numCell(totT.newKAMsMay)}
-    ${numCell(totT.newKAMsJune)}
-    ${numCell(totT.totalJuneEnd)}
+    ${numCell(totT.newKAMsM0)}
+    ${numCell(totT.newKAMsM1)}
+    ${numCell(totT.totalM1End)}
     ${numCell(totT.teamTarget,'#1a4f8a')}
     ${numCell(totT.hireTarget,'#7a4d10')}
     <td></td>
-    ${numCell(totT.tentMay)}
-    ${numCell(totT.tentJune)}
+    ${numCell(totT.tentM0)}
+    ${numCell(totT.tentM1)}
     <td></td>
   </tr>`;
 
@@ -837,14 +837,14 @@ function renderDashboard() {
           <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Joined</th>
           <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Not Joined/<br>Dropped</th>
           <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Current<br>KAMs</th>
-          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">+May</th>
-          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">+June</th>
-          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Total<br>June End</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">+M0</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">+M1</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Total<br>M1 End</th>
           <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Team<br>Target</th>
           <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Hire<br>Target</th>
           <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">Gap</th>
-          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">May</th>
-          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">June</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">M0</th>
+          <th style="background:var(--surface2);color:var(--text2);padding:8px 10px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.04em">M1</th>
         </tr>
       </thead>
       <tbody style="font-size:12px">
@@ -859,7 +859,7 @@ function renderDashboard() {
 function exportDashCSV() {
   const targets = getTargets();
   const leaders = [...new Set(candidates.map(c => c.leader).filter(Boolean))].sort();
-  const headers = ['Leader','Selected','Dropped Pre-Offer','Offer Pending','In Prospect','LTD Offers','Joined','Not Joined','Current KAMs','+May','+June','Total June End','Team Target','Hire Target','Gap','Tent May','Tent June','Remarks'];
+  const headers = ['Leader','Selected','Dropped Pre-Offer','Offer Pending','In Prospect','LTD Offers','Joined','Not Joined','Current KAMs','+M0','+M1','Total M1 End','Team Target','Hire Target','Gap','Tent M0','Tent M1','Remarks'];
   const rows = leaders.map(l => {
     const lc = candidates.filter(c => c.leader === l);
     const t = targets[l]||{};
@@ -874,9 +874,9 @@ function exportDashCSV() {
       lc.filter(c=>c.status==='Offer Sent').length,
       joined,
       lc.filter(c=>c.status==='Dropped').length,
-      t.currentKAMs||0, t.newKAMsMay||0, t.newKAMsJune||0,
-      t.totalJuneEnd||0, t.teamTarget||0, t.hireTarget||0, gap,
-      t.tentMay||0, t.tentJune||0,
+      t.currentKAMs||0, t.newKAMsM0||0, t.newKAMsM1||0,
+      t.totalM1End||0, t.teamTarget||0, t.hireTarget||0, gap,
+      t.tentM0||0, t.tentM1||0,
       `"${(t.remarks||'').replace(/"/g,"'")}"`
     ].join(',');
   });
@@ -904,13 +904,13 @@ function openTargetEditor() {
       <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:var(--text)">${l}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px">
         <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Current KAMs</label><input type="number" id="te_${l}_cur" value="${t.currentKAMs||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+May KAMs</label><input type="number" id="te_${l}_may" value="${t.newKAMsMay||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+June KAMs</label><input type="number" id="te_${l}_jun" value="${t.newKAMsJune||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Total June End</label><input type="number" id="te_${l}_jt" value="${t.totalJuneEnd||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+M0 KAMs</label><input type="number" id="te_${l}_may" value="${t.newKAMsM0||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">+M1 KAMs</label><input type="number" id="te_${l}_jun" value="${t.newKAMsM1||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Total M1 End</label><input type="number" id="te_${l}_jt" value="${t.totalM1End||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
         <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Team Target</label><input type="number" id="te_${l}_tt" value="${t.teamTarget||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
         <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Hire Target</label><input type="number" id="te_${l}_ht" value="${t.hireTarget||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. May</label><input type="number" id="te_${l}_tmay" value="${t.tentMay||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
-        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. June</label><input type="number" id="te_${l}_tjun" value="${t.tentJune||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. M0</label><input type="number" id="te_${l}_tmay" value="${t.tentM0||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
+        <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Tent. M1</label><input type="number" id="te_${l}_tjun" value="${t.tentM1||0}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
       </div>
       <div style="margin-top:8px;display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--text2);text-transform:uppercase">Remarks</label><input type="text" id="te_${l}_rem" value="${t.remarks||''}" style="padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;width:100%"></div>
     </div>`;
@@ -936,13 +936,13 @@ function saveTargetEdits() {
   leaders.forEach(l => {
     targets[l] = {
       currentKAMs:  parseInt(document.getElementById('te_'+l+'_cur')?.value)||0,
-      newKAMsMay:   parseInt(document.getElementById('te_'+l+'_may')?.value)||0,
-      newKAMsJune:  parseInt(document.getElementById('te_'+l+'_jun')?.value)||0,
-      totalJuneEnd: parseInt(document.getElementById('te_'+l+'_jt')?.value)||0,
+      newKAMsM0:   parseInt(document.getElementById('te_'+l+'_may')?.value)||0,
+      newKAMsM1:  parseInt(document.getElementById('te_'+l+'_jun')?.value)||0,
+      totalM1End: parseInt(document.getElementById('te_'+l+'_m1end')?.value)||0,
       teamTarget:   parseInt(document.getElementById('te_'+l+'_tt')?.value)||0,
       hireTarget:   parseInt(document.getElementById('te_'+l+'_ht')?.value)||0,
-      tentMay:      parseInt(document.getElementById('te_'+l+'_tmay')?.value)||0,
-      tentJune:     parseInt(document.getElementById('te_'+l+'_tjun')?.value)||0,
+      tentM0:      parseInt(document.getElementById('te_'+l+'_tmay')?.value)||0,
+      tentM1:     parseInt(document.getElementById('te_'+l+'_tjun')?.value)||0,
       remarks:      document.getElementById('te_'+l+'_rem')?.value||'',
     };
   });
